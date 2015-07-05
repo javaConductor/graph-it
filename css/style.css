@@ -30,11 +30,16 @@
 }
 
 .graph-view {
-  height: 90%;
-  width: 90%;
+  height: 90em;
+  width: 105em;
+  border-bottom: ridge;
+  border-top: ridge;
+  border-right: ridge;
+  border-left: ridge;
   position: relative;
-  background: linear-gradient(180deg, red, blue);
-  /*background: repeating-radial-gradient(ellipse farthest-corner, red, black 5%, blue 5%, green 10%);*/
+  background-color: lightsteelblue;
+  /*background: linear-gradient(180deg, lightsteelblue, lightsteelblue);*/
+  background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);
   /*background: -webkit-repeating-radial-gradient(ellipse farthest-corner, red, black 5%, blue 5%, green 10%);*/
 
 }
