@@ -18,21 +18,44 @@ var graphService = (function( dataService ) {
       graphItems.forEach(function (graphItem) {
         var div = $("<div class='graph-item'></div>");
 
-        var titleLabel = $('<label class="graph-title"></label>')
-        titleLabel.text(graphItem.title);
 
-        div.append(titleLabel);
+        var table = $('<table class="graph-table"></table>');
+
+        var tr1 = $('<tr></tr>');
+        var thTitle = $("<th  class='graph-title' align='center'></th>");
+        thTitle.text(graphItem.title);
+        tr1.append(thTitle);
+        table.append(tr1);
+
+        if (graphItem.images.length > 0) {
+          var tr2 = $('<tr></tr>');
+          var tdImage = $("<td></td>")
+          var image = $("<img class='graph-image'/>");
+          image.attr('width', 100);
+          image.attr('height', 100);
+          image.attr('src', "/graph-it"+graphItem.images[0]);
+          tdImage.append(image);
+          tr2.append(tdImage);
+          table.append(tr2);
+        }
+
+
+        //var titleLabel = $('<label class="graph-title"></label>')
+        //titleLabel.text(graphItem.title);
+
+//        div.append(titleLabel);
+        div.append(table);
         div.attr("id", "graph-item:"+graphItem.id);
 
         parent.append(div);
         div.parent().css({position: 'relative'});
         div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
 
-        if (graphItem.images.length > 0) {
-          var image = $("<img class='graph-image'/>");
-          image.attr('src', "/graph-it"+graphItem.images[0]);
-          div.append(image);
-        }
+        //if (graphItem.images.length > 0) {
+        //  var image = $("<img class='graph-image'/>");
+        //  image.attr('src', "/graph-it"+graphItem.images[0]);
+        //  div.append(image);
+        //}
 
         div.draggable({
 //      containment: "#graph-view",
