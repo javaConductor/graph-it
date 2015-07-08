@@ -3,28 +3,48 @@
  */
 
 
-function GraphItem(){
 
-  this.title = "";
+function GraphItem(config){
+
+  config = config ? config : {};
+
+  if ( !config.title){ throw Error( "Graph Item must have title."); }
+  this.title = config.title ? config.title : ""
+  this.categories = config.categories ? config.categories : [];
   this.images = [];
-  this.data = {};
-  this.position = {x: 0, y: 0 };
-  this.expanded = false;
-  this.links = {}
-  this.links.updatePosition = ""
-  this.links.update = ""
-  this.links.delete = ""
-
+  this.data = config.data ? config.data : {}
+  this.position = config.position ? config.position : {x: 0, y: 0 };
+  this.expanded = config.expanded ? config.expanded : false;
+  this.links = config.links ? config.links : [];
+  this.relationships = config.relationships ? config.relationships : [];
+  this.notes = [];
   return this;
 };
 
-function createGraphItem(title, position, images, expanded, data, links){
+function Relationship() {
+  this.name = "";
+  this.typeId  =""
 
-  var gi = new GraphItem();
-  gi.title = title ? title : ""
-  gi.title = title ? title : ""
-  gi.data = title ? title : ""
-  gi.position = title ? title : ""
-  gi.expanded = title ? title : ""
-  gi.links = links ? links : ""
+  return this;
+}
+
+
+function RelationshipType() {
+  this.typeName = "";
+  this.typeId  =""
+
+  return this;
+}
+
+function ItemRelationship(){
+  this.relatedItemId = "";
+  this.relationshipId = "";
+  this.notes = [];
+  return this;
+};
+
+function createGraphItem(config){
+
+  var gi = new GraphItem(config);
+  return gi;
 }

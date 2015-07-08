@@ -7,10 +7,13 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" >
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" >
     <link rel="stylesheet" type="text/css" href="css/style.css" >
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
     <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>-->
-    <script src="js/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="js/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <!--<script src="js/libs/jquery/1.11.2/jquery.min.js"></script>-->
+    <!--<script src="js/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>-->
+    <script src="js/libs/jsPlumb/1.7.5/jquery.jsPlumb-1.7.5-min.js "></script>
+    <script src="js/libs/requirejs/require-min.js"></script>
     <script  src="js/bootstrap.min.js"  >
       </script>
     <script  src="js/model.js"  >
@@ -25,21 +28,54 @@
 
 <body>
 
+  <script>
+  var graphService = null;
+
+  require(["graph"], function(graph){
+    graphService = graph;
+  });
+  </script>
+
   <h1>
     Graph O Matic
   </h1>
 
+  <div id="test1" style="left: 400px;width: 100px;height: 100px;background-color: navy;"> </div>
+  <div id="test2"  style="width: 100px;height: 100px;background-color: red;"> </div>
   <div class="graph-view" id="graph-view" width="100%" height="100%">
 
   </div>
+
 <script>
 
+
   $(function () {
-    graphService.getAllGraphItems(function(items){
-      graphService.createGraphItemElements( $("#graph-view"), items);
+
+    require(["graph"], function(graph){
+      graphService = graph;
+      graphService.getAllGraphItems(function(items){
+        graphService.createGraphItemElements( $("#graph-view"), items);
+      });
+    });
+
+    jsPlumb.ready(function() {
+
+      jsPlumb.draggable("test2");
+
+      jsPlumb.connect({
+        source: "test1",
+        target: "test2"
+      });
+      //firstInstance.connect("graph-item:")
     });
 
   })
+
+
+
+
+
+
 </script>
 </body>
 

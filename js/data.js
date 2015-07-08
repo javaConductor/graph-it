@@ -2,10 +2,10 @@
  * Created by lcollins on 6/29/2015.
  */
 
-var dataServiceFactory = (function(host, port){
+    define("data", [  ], function(){
 
-  var prefix = "http://"+host+":"+port+"/";
-  return {
+      var prefix = "http://localhost:"+8888+"/";
+      return {
     getAllGraphItems: function(fn){
       $.get( prefix+"graph-item", function( data ) {
 
@@ -34,7 +34,5 @@ var dataServiceFactory = (function(host, port){
         console.log('Update failed: ', response);
       });
     }
-
   }
-
 });
