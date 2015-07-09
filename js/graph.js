@@ -3,7 +3,7 @@
  */
 
 define("graph", ["data"], function (dataService) {
-  return {
+  var obj = {
     getAllGraphItems: function (callbackFn) {
       dataService.getAllGraphItems(function (items) {
         console.dir("items:", items);
@@ -47,27 +47,31 @@ define("graph", ["data"], function (dataService) {
           cursor: "move",
           opacity: 0.35,
           snap: true,
-          scroll: false,
+          scroll: true,
           start: function () {
             var pos = div.position();
             console.log("Start ", {x: pos.left, y: pos.top});
           },
           drag: function () {
+//              jsPlumb.repaint($(this));
           },
           stop: function (event, ui) {
 //        var pos = div.position();
             var pos = div.position();
             console.log("End (pos)", {x: pos.left, y: pos.top});
             console.log("End ", {x: ui.position.left, y: ui.position.top});
-            graphItem.position.x = Math.min(pos.left, parent.right);
-            graphItem.position.y = Math.min(pos.top, parent.bottom);
-            graphItem.position.x = Math.max(graphItem.position.x, 0);
-            graphItem.position.y = Math.max(graphItem.position.y, 0);
-            div.animate({top: graphItem.position.y});
-            div.animate({left: graphItem.position.x});
-            this.updateItemPosition(graphItem, function (newGraphItem) {
-              console.log("Graph Item updated ", newGraphItem.position);
-            })
+            graphItem.position.x = Math.max(pos.left, 0);
+            graphItem.position.y = Math.max(pos.top, 0);
+            div.animate({top: graphItem.position.y}, function(){
+              div.animate({left: graphItem.position.x}, function(){
+                jsPlumb.repaintEverything();
+                self.updateItemPosition(graphItem, function (newGraphItem) {
+                  console.log("Graph Item updated ", newGraphItem.position);
+                })
+
+              });
+
+            });
           }
         });
       });
@@ -78,8 +82,8 @@ define("graph", ["data"], function (dataService) {
     ///// parent to search for the related items and to add to
     createRelationshipElement: function (graphItem, relationship, parent, force) {
       /// get the relatedGraphItem element
-      var jqGraphItem = this.findGraphItem(graphItem.id, parent);
-      var jqRelated = this.findGraphItem(relationship.relatedItemId, parent);
+      var jqGraphItem = self.findGraphItem(graphItem.id, parent);
+      var jqRelated = self.findGraphItem(relationship.relatedItemId, parent);
       /// if its not in the view and we don't want to create it
       if (jqRelated.size() == 0 && !force) {
         return null;
@@ -87,32 +91,34 @@ define("graph", ["data"], function (dataService) {
       /// if its not found and we are forcing it then create it
       if (force && jqRelated.size() == 0) {
         dataService.getGraphItem(relationship.relatedItemId, function (relatedItem) {
-          this.createGraphItemElements(parent, relatedItem);
-          jqRelated = this.findGraphItem(relationship.relatedItemId, parent);
+          self.createGraphItemElements(parent, relatedItem);
+          jqRelated = self.findGraphItem(relationship.relatedItemId, parent);
           if (!jqRelated) {
             throw Error("Could not display graphItem: " + relationship.relatedItemId);
           }
         });
       }
 
-      this.createGraphItemRelationship(jqGraphItem, jqRelated, relationship.relationshipId);
-
+      self.createGraphItemRelationship(jqGraphItem, jqRelated, relationship.relationshipId);
     },
+
     findGraphItem: function (graphItemId, parent) {
       $("#graph-item:" + graphItemId);
     },
+
     createGraphItemRelationship: function (item, relatedItem, relationshipId) {
-
       jsPlumb.connect(item, relatedItem);
-
     },
+
     ///// parent to search for the related items and to add to
     createRelationshipElements: function (graphItem, parent, force) {
       graphItem.relationships.each(function (rel) {
 
       })
     }
-  }
+  };
+  var self = obj;
+  return obj;
 });
 
 
