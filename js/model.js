@@ -4,26 +4,29 @@
 
 
 
-function GraphItem(config){
+function GraphItem(config) {
 
   config = config ? config : {};
 
-  if ( !config.title){ throw Error( "Graph Item must have title."); }
+  if (!config.title) {
+    throw Error("Graph Item must have title.");
+  }
   this.title = config.title ? config.title : ""
   this.categories = config.categories ? config.categories : [];
   this.images = [];
   this.data = config.data ? config.data : {}
-  this.position = config.position ? config.position : {x: 0, y: 0 };
+  this.position = config.position ? config.position : {x: 0, y: 0};
   this.expanded = config.expanded ? config.expanded : false;
   this.links = config.links ? config.links : [];
-  this.relationships = config.relationships ? config.relationships : [];
+  /// ItemRelationship - DO this in its own collection
+  ///this.relationships = config.relationships ? config.relationships : [];
   this.notes = [];
   return this;
 };
 
 function Relationship() {
   this.name = "";
-  this.typeId  =""
+  this.typeId = ""
 
   return this;
 }
@@ -31,19 +34,20 @@ function Relationship() {
 
 function RelationshipType() {
   this.typeName = "";
-  this.typeId  =""
+  this.typeId = ""
 
   return this;
 }
 
-function ItemRelationship(){
+function ItemRelationship() {
+  this.sourceItemId = "";
   this.relatedItemId = "";
   this.relationshipId = "";
   this.notes = [];
   return this;
 };
 
-function createGraphItem(config){
+function createGraphItem(config) {
 
   var gi = new GraphItem(config);
   return gi;

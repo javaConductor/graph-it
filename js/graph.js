@@ -2,7 +2,7 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("graph", ["data"], function (dataService) {
+define("graph", ["data","relationship"], function (dataService, relationshipService) {
   var obj = {
     getAllGraphItems: function (callbackFn) {
       dataService.getAllGraphItems(function (items) {
@@ -62,18 +62,22 @@ define("graph", ["data"], function (dataService) {
             console.log("End ", {x: ui.position.left, y: ui.position.top});
             graphItem.position.x = Math.max(pos.left, 0);
             graphItem.position.y = Math.max(pos.top, 0);
-            div.animate({top: graphItem.position.y}, function(){
-              div.animate({left: graphItem.position.x}, function(){
+            div.animate({top: graphItem.position.y}, function () {
+              div.animate({left: graphItem.position.x}, function () {
                 jsPlumb.repaintEverything();
                 self.updateItemPosition(graphItem, function (newGraphItem) {
                   console.log("Graph Item updated ", newGraphItem.position);
                 })
-
               });
-
             });
           }
         });
+      });
+
+      relationshipService.getRelationshipsForGraphItems(graphItems.map(function(item){
+        return item.id;
+      }), function(relationships){
+        relationshipService.drawRelationship(relationships)
       });
     },
     updateItemPosition: function (graphItem, callbackFn) {

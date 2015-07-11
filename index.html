@@ -24,6 +24,8 @@
   </script>
   <script src="js/graph.js">
   </script>
+  <script src="js/relationship.js">
+  </script>
 </head>
 
 <body>
@@ -46,6 +48,7 @@
 
 <script>
   jsPlumb.ready(function () {
+    jsPlumb.Defaults.Connector = [ "Flowchart", { stub:40 } ];
     $(function () {
       require(["graph"], function (graph) {
         graphService = graph;
