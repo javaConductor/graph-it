@@ -34,7 +34,7 @@ function Relationship() {
 
 function RelationshipType() {
   this.typeName = "";
-  this.typeId = ""
+  this.id = "";
 
   return this;
 }
@@ -48,7 +48,6 @@ function ItemRelationship() {
 };
 
 function createGraphItem(config) {
-
   var gi = new GraphItem(config);
   return gi;
 }

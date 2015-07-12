@@ -1,4 +1,10 @@
 
+.graph-button {
+  background-color: navy;
+  color: #ffffff;
+
+}
+
 .graph-item {
   height: 8em;
   width: 8em;
@@ -46,4 +52,9 @@
   background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);
   /*background: -webkit-repeating-radial-gradient(ellipse farthest-corner, red, black 5%, blue 5%, green 10%);*/
 
+}
+
+.simple-relationship-label {
+  color: navy;
+  background-color: white;
 }

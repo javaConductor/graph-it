@@ -2,13 +2,10 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("graph", ["data","relationship"], function (dataService, relationshipService) {
+define("graph", ["data", "relationship"], function (dataService, relationshipService) {
   var obj = {
-    getAllGraphItems: function (callbackFn) {
-      dataService.getAllGraphItems(function (items) {
-        console.dir("items:", items);
-        callbackFn(items);
-      })
+    getAllGraphItems: function () {
+      return dataService.getAllGraphItems();
     },
     getGraphItem: function (graphItemId, callbackFn) {
       dataService.getGraphItem(graphItemId, callbackFn)
@@ -65,7 +62,7 @@ define("graph", ["data","relationship"], function (dataService, relationshipServ
             div.animate({top: graphItem.position.y}, function () {
               div.animate({left: graphItem.position.x}, function () {
                 jsPlumb.repaintEverything();
-                self.updateItemPosition(graphItem, function (newGraphItem) {
+                self.updateItemPosition(graphItem).then( function (newGraphItem) {
                   console.log("Graph Item updated ", newGraphItem.position);
                 })
               });
@@ -74,14 +71,15 @@ define("graph", ["data","relationship"], function (dataService, relationshipServ
         });
       });
 
-      relationshipService.getRelationshipsForGraphItems(graphItems.map(function(item){
-        return item.id;
-      }), function(relationships){
-        relationshipService.drawRelationship(relationships)
-      });
+      relationshipService.getRelationshipsForGraphItems(
+        graphItems.map(function (item) {
+          return item.id;
+        })).then(function (relationships) {
+          relationshipService.drawRelationships(relationships)
+        });
     },
-    updateItemPosition: function (graphItem, callbackFn) {
-      dataService.updateGraphItemPosition(graphItem, callbackFn)
+    updateItemPosition: function (graphItem) {
+      return dataService.updateGraphItemPosition(graphItem)
     },
     ///// parent to search for the related items and to add to
     createRelationshipElement: function (graphItem, relationship, parent, force) {

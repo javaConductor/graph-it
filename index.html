@@ -18,13 +18,11 @@
   </script>
   <script src="js/model.js">
   </script>
-  <script src="js/testData.js">
-  </script>
   <script src="js/data.js">
   </script>
-  <script src="js/graph.js">
-  </script>
   <script src="js/relationship.js">
+  </script>
+  <script src="js/graph.js">
   </script>
 </head>
 
@@ -52,10 +50,8 @@
     $(function () {
       require(["graph"], function (graph) {
         graphService = graph;
-        graphService.getAllGraphItems(function (items) {
+        graphService.getAllGraphItems().then(function (items) {
           graphService.createGraphItemElements($("#graph-view"), items);
-          jsPlumb.connect({ source: "graph-item:559a1355d6123747d7ade683", target:"graph-item:559a1355d6123747d7ade684"});
-
         });
       });
     });

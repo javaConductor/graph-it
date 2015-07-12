@@ -2,25 +2,76 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("relationship", ["data"], function (dataService) {
+define("relationship", ["data", "js/libs/q/q.js"], function (dataService, Q) {
   var self = null;
+  var relationshipDefinitions;
+
+  console.log("Q is:" + Q);
+  var toMap = function (array, member) {
+    return array.reduce(function (total, current) {
+      total[current[member]] = current;
+      return total;
+    }, {});
+  };
+
   var obj = {
-    graphItemIdToElementId: function(graphItemId){
-      return "graph-item:"+graphItemId;
+
+    getRelationshipDefs: function () {
+      var deferred = Q.defer();
+      //TODO add time if condition to refresh
+      if (!relationshipDefinitions) {
+        dataService.getRelationshipDefs().then(function (relDefs) {
+          relationshipDefinitions = toMap(relDefs, "id");
+          deferred.resolve(relationshipDefinitions);
+        }, function (error) {
+          console.log("getRelationshipDefs Error: " + error);
+          deferred.reject("getRelationshipDefs Error: " + error);
+        });
+      }
+      else {
+        deferred.resolve(relationshipDefinitions);
+      }
+      return deferred.promise;
+    },
+    graphItemIdToElementId: function (graphItemId) {
+      return "graph-item:" + graphItemId;
     },
 
     drawRelationship: function (itemRelationship) {
 
-      //TODO do something different heree based on relationshipType
-      jsPlumb.connect({
-        source: self.graphItemIdToElementId(itemRelationship.sourceItemId),
-        target: self.graphItemIdToElementId(itemRelationship.relatedItemId)
+      self.getRelationshipDefs().then(function (relDefs) {
+
+        //TODO do something different heree based on relationshipType
+        jsPlumb.connect({
+          source: self.graphItemIdToElementId(itemRelationship.sourceItemId),
+          target: self.graphItemIdToElementId(itemRelationship.relatedItemId),
+          connector: ["Flowchart", {stub: 30}],
+          overlays: [
+            ["Arrow", {
+              width: 30, length: 30, location: 1,
+              paintStyle: {
+                fillStyle: "white",
+                outlineColor: "navy",
+                lineWidth: 4
+              },
+              id: "graph-relationship-arrow:" + itemRelationship.id
+            }
+            ],
+            ["Label", {
+              label: relDefs[itemRelationship.relationship.id].name,
+              cssClass: "simple-relationship-label",
+              id: "graph-relationship-label:" + itemRelationship.id
+            }
+            ]
+
+          ]
+        });
       });
     },
-   drawRelationships: function (itemRelationships) {
-     itemRelationships.each(function(itemRelationship){
-       self.drawRelationship(itemRelationship);
-     });
+    drawRelationships: function (itemRelationships) {
+      itemRelationships.forEach(function (itemRelationship) {
+        self.drawRelationship(itemRelationship);
+      });
     },
 
     getGraphItem: function (graphItemId, callbackFn) {
@@ -38,8 +89,8 @@ define("relationship", ["data"], function (dataService) {
       }
 
     },
-    getRelationshipsForGraphItems: function (graphItemIds, callbackFn) {
-      dataService.getRelationshipsForGraphItems(graphItemIds, callbackFn)
+    getRelationshipsForGraphItems: function (graphItemIds) {
+      return dataService.getRelationshipsForGraphItems(graphItemIds)
     },
 
     ///// parent to search for the related items and to add to
@@ -76,12 +127,13 @@ define("relationship", ["data"], function (dataService) {
         self.drawRelationship(graphItem.id,
           rel.relatedItemId,
           rel.relationshipId,
-          function(){
-            console.log("relationship("+rel.relationshipId+"):"
-            +graphItem.id + "-->>"+ rel.relatedItemId);
+          function () {
+            console.log("relationship(" + rel.relationshipId + "):"
+            + graphItem.id + "-->>" + rel.relatedItemId);
           });
       });
     }
   };
+  self = obj;
   return obj;
 });
