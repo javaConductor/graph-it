@@ -7,13 +7,22 @@
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="//code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
-  <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>-->
-  <!--<script src="js/libs/jquery/1.11.2/jquery.min.js"></script>-->
-  <!--<script src="js/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>-->
+  <link rel="stylesheet" type="text/css"
+        href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+  <!-- FROM CDN -->
+  <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
+  <!--<script src="//code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>-->
+  <!--<script src="//cdn.jsdelivr.net/jsrender/1.0pre35/jsrender.min.js"></script>-->
+
+  <!-- LOCAL -->
+  <script src="js/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="js/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script src="js/libs/jsRender/1.0pre35/jsrender.min.js"></script>
+
   <script src="js/libs/jsPlumb/1.7.5/jquery.jsPlumb-1.7.5-min.js "></script>
   <script src="js/libs/requirejs/require-min.js"></script>
+
   <script src="js/bootstrap.min.js">
   </script>
   <script src="js/model.js">
@@ -23,6 +32,8 @@
   <script src="js/relationship.js">
   </script>
   <script src="js/graph.js">
+  </script>
+  <script src="js/toolbar.js">
   </script>
 </head>
 
@@ -36,9 +47,24 @@
   });
 </script>
 
+<div id="new-item-dialog" >
+  <table>
+      <tr>
+          <th>Title</th><td><input type="text" id="new-item-title" class="new-item"></td>
+      </tr>
+  </table>
+</div>
+
+
+
 <h1>
   Graph O Matic
 </h1>
+<div id="graph-toolbar" class="graph-toolbar">
+  <table  class="graph-toolbar"><tr>
+    <td><button id="graph-toolbar-new-item">New . . .</button></td>
+  </tr></table>
+</div>
 
 <div class="graph-view" id="graph-view" width="100%" height="100%">
 
@@ -48,10 +74,10 @@
   jsPlumb.ready(function () {
     jsPlumb.Defaults.Connector = [ "Flowchart", { stub:40 } ];
     $(function () {
-      require(["graph"], function (graph) {
+      require(["graph","toolbar"], function (graph, toolbar) {
         graphService = graph;
-        graphService.getAllGraphItems().then(function (items) {
-          graphService.createGraphItemElements($("#graph-view"), items);
+        graphService.initGraphItemElements($("#graph-view")).then(function () {
+          console.log("Started...");
         });
       });
     });

@@ -14,8 +14,16 @@
 }
 
 .graph-table {
+  width: 100%;
   border-left: ridge;
   border-right: ridge;
+  border-collapse: collapse;
+  background-color: navy;
+  color: #ffffff;
+}
+
+.graph-toolbar {
+  border: double;
   border-collapse: collapse;
 }
 
@@ -58,3 +66,13 @@
   color: navy;
   background-color: white;
 }
+
+#new-item-dialog {
+  background-color: lightsteelblue;
+
+}
+
+.ui-dialog { background: #87a5be no-repeat right bottom fixed; }
+/*.ui-dialog { background: #87a5be url(../Images/bg.jpg) no-repeat right bottom fixed; }*/
+
+

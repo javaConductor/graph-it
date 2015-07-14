@@ -3,15 +3,36 @@
  */
 
 define("graph", ["data", "relationship"], function (dataService, relationshipService) {
+
+
+
   var obj = {
+    getCategories: function () {
+      return dataService.getCategories()
+    },
     getAllGraphItems: function () {
       return dataService.getAllGraphItems();
     },
-    getGraphItem: function (graphItemId, callbackFn) {
-      dataService.getGraphItem(graphItemId, callbackFn)
+    findAllGraphItems: function () {
+      return $('div[id^="graph-item"]').filter(
+        function () {
+          return this.id.match(/\d+$/);
+        });
     },
-    createGraphItemElements: function (parent, graphItems, onExpandFn, onDrag) {
-      graphItems.forEach(function (graphItem) {
+    getGraphItem: function (graphItemId) {
+      return dataService.getGraphItem(graphItemId)
+    },
+    addGraphItemToView: function (parent, graphItem) {
+
+      ///
+      graphService.createGraphItemElements()
+
+      return dataService.createGraphItem(graphItem)
+    },
+    createGraphItem: function (graphItem) {
+      return dataService.createGraphItem(graphItem)
+    },
+    createGraphItemElement: function (graphItem) {
         var div = $("<div class='graph-item'></div>");
         var table = $('<table class="graph-table"></table>');
         var tr1 = $('<tr></tr>');
@@ -20,7 +41,7 @@ define("graph", ["data", "relationship"], function (dataService, relationshipSer
         tr1.append(thTitle);
         table.append(tr1);
 
-        if (graphItem.images.length > 0) {
+        if (graphItem.images && graphItem.images.length > 0) {
           var tr2 = $('<tr></tr>');
           var tdImage = $("<td></td>")
           var image = $("<img class='graph-image'/>");
@@ -35,7 +56,6 @@ define("graph", ["data", "relationship"], function (dataService, relationshipSer
         div.append(table);
         div.attr("id", "graph-item:" + graphItem.id);
 
-        parent.append(div);
         div.parent().css({position: 'relative'});
         div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
 
@@ -48,9 +68,6 @@ define("graph", ["data", "relationship"], function (dataService, relationshipSer
           start: function () {
             var pos = div.position();
             console.log("Start ", {x: pos.left, y: pos.top});
-          },
-          drag: function () {
-//              jsPlumb.repaint($(this));
           },
           stop: function (event, ui) {
 //        var pos = div.position();
@@ -69,54 +86,32 @@ define("graph", ["data", "relationship"], function (dataService, relationshipSer
             });
           }
         });
+      return div;
+    },
+    createGraphItemElements: function (parent, graphItems) {
+      var divs =  graphItems.map(function (graphItem) {
+        var div = self.createGraphItemElement(graphItem);
+        parent.append(div);
+        return div;
       });
+      return divs;
+    },
+    initGraphItemElements: function (parent) {
 
-      relationshipService.getRelationshipsForGraphItems(
-        graphItems.map(function (item) {
-          return item.id;
-        })).then(function (relationships) {
-          relationshipService.drawRelationships(relationships)
+      return self.getAllGraphItems().then(function(graphItems){
+        var itemElements = self.createGraphItemElements(parent, graphItems);
+        relationshipService.view.refreshRelationships();
+        return itemElements;
         });
     },
+
     updateItemPosition: function (graphItem) {
       return dataService.updateGraphItemPosition(graphItem)
     },
-    ///// parent to search for the related items and to add to
-    createRelationshipElement: function (graphItem, relationship, parent, force) {
-      /// get the relatedGraphItem element
-      var jqGraphItem = self.findGraphItem(graphItem.id, parent);
-      var jqRelated = self.findGraphItem(relationship.relatedItemId, parent);
-      /// if its not in the view and we don't want to create it
-      if (jqRelated.size() == 0 && !force) {
-        return null;
-      }
-      /// if its not found and we are forcing it then create it
-      if (force && jqRelated.size() == 0) {
-        dataService.getGraphItem(relationship.relatedItemId, function (relatedItem) {
-          self.createGraphItemElements(parent, relatedItem);
-          jqRelated = self.findGraphItem(relationship.relatedItemId, parent);
-          if (!jqRelated) {
-            throw Error("Could not display graphItem: " + relationship.relatedItemId);
-          }
-        });
-      }
-
-      self.createGraphItemRelationship(jqGraphItem, jqRelated, relationship.relationshipId);
-    },
 
     findGraphItem: function (graphItemId, parent) {
-      $("#graph-item:" + graphItemId);
-    },
-
-    createGraphItemRelationship: function (item, relatedItem, relationshipId) {
-      jsPlumb.connect(item, relatedItem);
-    },
-
-    ///// parent to search for the related items and to add to
-    createRelationshipElements: function (graphItem, parent, force) {
-      graphItem.relationships.each(function (rel) {
-
-      })
+      var item = $("#graph-item:" + graphItemId);
+      return item.size() > 0 ? item : null;
     }
   };
   var self = obj;
