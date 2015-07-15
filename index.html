@@ -35,27 +35,30 @@
   </script>
   <script src="js/toolbar.js">
   </script>
+  <script src="js/storage.js">
+  </script>
+  <script src="js/app.js">
+  </script>
 </head>
 
 <body>
 
-<script>
-  var graphService = null;
+<!--<script>-->
+  <!--var graphService = null;-->
+<!--</script>-->
 
-  require(["graph"], function (graph) {
-    graphService = graph;
-  });
-</script>
-
-<div id="new-item-dialog" >
+<div id="new-item-dialog" style="visibility: hidden">
   <table>
-      <tr>
-          <th>Title</th><td><input type="text" id="new-item-title" class="new-item"></td>
-      </tr>
+    <tr>
+      <th>Title</th>
+      <td><input type="text" id="new-item-title" class="new-item"></td>
+    </tr>
+    <tr>
+      <th>Categories</th>
+      <td><select id="new-item-category" class="new-item"/></td>
+    </tr>
   </table>
 </div>
-
-
 
 <h1>
   Graph O Matic
@@ -70,20 +73,33 @@
 
 </div>
 
+<!--<no-script>-->
+  <!--jsPlumb.ready(function () {-->
+    <!--jsPlumb.Defaults.Connector = [ "Flowchart", { stub:40 } ];-->
+    <!--$(function () {-->
+      <!--require(["graph","toolbar"], function (graph, toolbar) {-->
+        <!--graphService = graph;-->
+        <!--graphService.initGraphItemElements($("#graph-view")).then(function () {-->
+          <!--console.log("Started...");-->
+        <!--});-->
+      <!--});-->
+    <!--});-->
+  <!--});-->
+<!--</no-script>-->
+
 <script>
-  jsPlumb.ready(function () {
-    jsPlumb.Defaults.Connector = [ "Flowchart", { stub:40 } ];
-    $(function () {
-      require(["graph","toolbar"], function (graph, toolbar) {
-        graphService = graph;
-        graphService.initGraphItemElements($("#graph-view")).then(function () {
-          console.log("Started...");
-        });
+  require(["graph-it-app"], function (app) {
+    app.initialize($("#graph-view"), function(app){
+      var graph = app.graphService;
+      var toolbar = app.toolbar;
+      graph.initGraphItemElements($("#graph-view")).then(function () {
+        console.log("Started...");
+        alert("App initialized!!!");
       });
     });
   });
-
 </script>
+
 </body>
 
 </html>

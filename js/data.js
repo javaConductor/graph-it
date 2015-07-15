@@ -8,7 +8,7 @@ define("data", ["js/libs/q/q.js"], function (Q) {
   return {
 
     getCategories:function(){
-      var p = Q($.get(prefix + "graph-item/categories"));
+      var p = Q($.get(prefix + "category"));
       p.fail( function(err){
         console.log("getCategories Error: "+err)
       });

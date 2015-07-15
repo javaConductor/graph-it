@@ -2,36 +2,33 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("graph", ["data", "relationship"], function (dataService, relationshipService) {
-
+define("graph", ["data", "storage", "relationship"], function (dataService, storage, relationshipService) {
 
 
   var obj = {
     getCategories: function () {
-      return dataService.getCategories()
+      return storage.getCategories()
     },
+
     getAllGraphItems: function () {
-      return dataService.getAllGraphItems();
+      return storage.getAllGraphItems();
     },
+
     findAllGraphItems: function () {
-      return $('div[id^="graph-item"]').filter(
+      return $('div[id^="graph-item:"]').filter(
         function () {
           return this.id.match(/\d+$/);
         });
     },
+
     getGraphItem: function (graphItemId) {
-      return dataService.getGraphItem(graphItemId)
+      return storage.getGraphItem(graphItemId)
     },
-    addGraphItemToView: function (parent, graphItem) {
 
-      ///
-      graphService.createGraphItemElements()
-
-      return dataService.createGraphItem(graphItem)
-    },
     createGraphItem: function (graphItem) {
-      return dataService.createGraphItem(graphItem)
+      return storage.addGraphItem(graphItem)
     },
+
     createGraphItemElement: function (graphItem) {
         var div = $("<div class='graph-item'></div>");
         var table = $('<table class="graph-table"></table>');
@@ -88,6 +85,7 @@ define("graph", ["data", "relationship"], function (dataService, relationshipSer
         });
       return div;
     },
+
     createGraphItemElements: function (parent, graphItems) {
       var divs =  graphItems.map(function (graphItem) {
         var div = self.createGraphItemElement(graphItem);
@@ -96,9 +94,10 @@ define("graph", ["data", "relationship"], function (dataService, relationshipSer
       });
       return divs;
     },
-    initGraphItemElements: function (parent) {
 
-      return self.getAllGraphItems().then(function(graphItems){
+    initGraphItemElements: function (parent) {
+      return storage.getAllGraphItems().then(function(graphItems){
+
         var itemElements = self.createGraphItemElements(parent, graphItems);
         relationshipService.view.refreshRelationships();
         return itemElements;

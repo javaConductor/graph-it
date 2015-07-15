@@ -2,7 +2,7 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("relationship", ["data", "js/libs/q/q.js"], function (dataService, Q) {
+define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataService, storage, Q) {
   var self = null;
   var relationshipDefinitions;
 
@@ -34,12 +34,12 @@ define("relationship", ["data", "js/libs/q/q.js"], function (dataService, Q) {
     },
 
     getGraphItem: function (graphItemIdn) {
-      return dataService.getGraphItem(graphItemId)
+      return storage.getGraphItem(graphItemId)
     },
 
-    getRelationshipsForGraphItems: function (graphItemIds) {
-      return dataService.getRelationshipsForGraphItems(graphItemIds)
-    },
+    //getRelationshipsForGraphItems: function (graphItemIds) {
+    //  return dataService.getRelationshipsForGraphItems(graphItemIds)
+    //},
 
     view :{
       findGraphItem: function (graphItemId, parent) {
@@ -47,19 +47,18 @@ define("relationship", ["data", "js/libs/q/q.js"], function (dataService, Q) {
         var els = $("#elId");
         return els.size() > 0 ? els : null;
       },
+      findAllGraphItems: function () {
+        return $('div[id^="graph-item"]').filter(
+          function () {
+            return this.id.match(/\d+$/);
+          });
+      },
       refreshRelationships: function(){
         var graphItemIds = [];
-        graphService.findAllGraphItems().each(function(index){
-          jsPlumb.detachAllConnections($( this ));
-          graphItemIds.push( $( this ).attr("id").substring(11) );
-          console.log( index + ": " + $( this ).attr("id") );
-        });
-
-        self.getRelationshipsForGraphItems(graphItemIds).then(function(itemRelationships){
-          return self.view.drawRelationships(itemRelationships);
-        });
-
-
+        jsPlumb.detachEveryConnection();
+        return storage.getAllRelationships().then(function(itemRelationships){
+            return self.view.drawRelationships(itemRelationships);
+          });
       },
       graphItemIdToElementId: function (graphItemId) {
         return "graph-item:" + graphItemId;
@@ -68,6 +67,11 @@ define("relationship", ["data", "js/libs/q/q.js"], function (dataService, Q) {
       drawRelationship: function (itemRelationship) {
 
         self.getRelationshipDefs().then(function (relDefs) {
+
+          if($(self.view.graphItemIdToElementId(itemRelationship.sourceItemId)).length == 0  ||
+            $(self.view.graphItemIdToElementId(itemRelationship.relatedItemId)).length == 0){
+            return null;
+          }
 
           //TODO do something different heree based on relationshipType
           return jsPlumb.connect({
