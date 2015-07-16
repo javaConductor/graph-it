@@ -20,8 +20,8 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
       //TODO add time if condition to refresh
       if (!relationshipDefinitions) {
         dataService.getRelationshipDefs().then(function (relDefs) {
-          relationshipDefinitions = toMap(relDefs, "id");
-          deferred.resolve(relationshipDefinitions);
+          //relationshipDefinitions = toMap(relDefs, "id");
+          deferred.resolve(relDefs);
         }, function (error) {
           console.log("getRelationshipDefs Error: " + error);
           deferred.reject("getRelationshipDefs Error: " + error);
@@ -54,9 +54,8 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
           });
       },
       refreshRelationships: function(){
-        var graphItemIds = [];
         jsPlumb.detachEveryConnection();
-        return storage.getAllRelationships().then(function(itemRelationships){
+        return storage.getAllItemRelationships().then(function(itemRelationships){
             return self.view.drawRelationships(itemRelationships);
           });
       },
@@ -66,12 +65,14 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
 
       drawRelationship: function (itemRelationship) {
 
-        self.getRelationshipDefs().then(function (relDefs) {
+        storage.getAllRelationships().then(function (relDefs) {
 
-          if($(self.view.graphItemIdToElementId(itemRelationship.sourceItemId)).length == 0  ||
-            $(self.view.graphItemIdToElementId(itemRelationship.relatedItemId)).length == 0){
-            return null;
-          }
+          var relationshipDefs = toMap(relDefs, "id");
+          //if($(self.view.graphItemIdToElementId(itemRelationship.sourceItemId)).length == 0  ||
+          //  $(self.view.graphItemIdToElementId(itemRelationship.relatedItemId)).length == 0){
+          //  console.dir("Cannot create relationship", itemRelationship);
+          //  return null;
+          //}
 
           //TODO do something different heree based on relationshipType
           return jsPlumb.connect({
@@ -90,7 +91,7 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
               }
               ],
               ["Label", {
-                label: relDefs[itemRelationship.relationship.id].name,
+                label: relationshipDefs[itemRelationship.relationship.id].name,
                 cssClass: "simple-relationship-label",
                 id: "graph-relationship-label:" + itemRelationship.id
               }

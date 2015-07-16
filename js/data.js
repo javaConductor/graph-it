@@ -93,6 +93,26 @@ define("data", ["js/libs/q/q.js"], function (Q) {
       return p;
     },
 
+    getAllItemRelationships: function () {
+
+      var url = prefix + "item-relationship";
+      var p = Q($.ajax({
+        type: "GET",
+        url: url,
+        dataType: 'json',
+        timeout: 12000, // 12 seconds because server is so slow
+        headers: {
+          Accept: "application/json"
+        }
+      }));
+
+      p.fail(function (response) {
+        console.log('getAllItemRelationships failed: ', response);
+      });
+
+      return p;
+    },
+
     updateGraphItemPosition: function (graphItem) {
 
       var url = prefix + "graph-item/" + graphItem.id + "/position/" + graphItem.position.x + "/" + graphItem.position.y;

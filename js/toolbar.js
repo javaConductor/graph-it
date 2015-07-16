@@ -19,19 +19,30 @@ define("toolbar",["graph","relationship","storage"], function(graphService, rela
     buttons: {
       "Create Item": function (evt) {
         var title = $("#new-item-title").val();
-        var categories = $("#new-item-categories").val();
-        createNewItem({position: {x: 200, y: 200}, title: title}).then(function (graphItem) {
-          newItemDialog.dialog("close");
+        var categoryId = $("#new-item-category").val();
+        storageService.getCategory( categoryId)
+          .then(function(category){
+            return createNewItem({
+            position: {x: 200, y: 200},
+            categories: [ category ],
+            title: title})
+          .then(function (graphItem) {
+            newItemDialog.dialog("close");
+            newItemDialog.hide();
+            return graphItem;})
         })
       },
       Cancel: function () {
         newItemDialog.dialog("close");
+        newItemDialog.hide();
       }
     }
   });
 
+  newItemDialog.hide();
+
   $("#graph-toolbar-new-item").click(function(){
-    newItemDialog.dialog('open');
+    obj.openNewItemDialog();
   });
 
   var createNewItem = function createNewItem(config){
@@ -45,13 +56,14 @@ define("toolbar",["graph","relationship","storage"], function(graphService, rela
   var obj = {
 
     openNewItemDialog: function() {
-      newItemDialog.dialog("open");
-      return storageService.getCategories().then(function (categories) {
+//      newItemDialog.dialog("open");
+      return storageService.getAllCategories().then(function (categories) {
         categories.forEach(function (category) {
           var $opt = $("<option value='" + category.id + "'>" + category.name + "</option>")
-          $("#new-item-categories").append($opt);
+          $("#new-item-category").append($opt);
         });
 
+        newItemDialog.show();
         newItemDialog.dialog("open");
         return newItemDialog;
       });

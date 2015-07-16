@@ -47,7 +47,7 @@
   <!--var graphService = null;-->
 <!--</script>-->
 
-<div id="new-item-dialog" style="visibility: hidden">
+<div id="new-item-dialog"">
   <table>
     <tr>
       <th>Title</th>
@@ -92,8 +92,8 @@
     app.initialize($("#graph-view"), function(app){
       var graph = app.graphService;
       var toolbar = app.toolbar;
-      graph.initGraphItemElements($("#graph-view")).then(function () {
-        console.log("Started...");
+      graph.initGraphItemElements($("#graph-view")).then(function ($elemnts) {
+        console.log("Started...", $elemnts);
         alert("App initialized!!!");
       });
     });

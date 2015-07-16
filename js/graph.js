@@ -105,7 +105,9 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
     },
 
     updateItemPosition: function (graphItem) {
-      return dataService.updateGraphItemPosition(graphItem)
+      return dataService.updateGraphItemPosition(graphItem).then(function(graphItem){
+        return storage.updateGraphItem(graphItem);
+      });
     },
 
     findGraphItem: function (graphItemId, parent) {

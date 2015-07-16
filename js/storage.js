@@ -10,9 +10,13 @@ define("storage", ["js/libs/q/q.js", "data"], function (Q, dataService) {
 
   var obj =  {
 
+    ///////////////////////////////////////////////////////////////////
+    /// Category Stuff
+    ///////////////////////////////////////////////////////////////////
     loadCategories: function loadCategories(){
       return dataService.getCategories().then(function(categories){
         localStorage["categories"] = JSON.stringify(categories);
+        console.dir("Storage: Added categories:", categories);
         localStorage["categories-updated"] = ""+(new Date().getMilliseconds() + categoryTimeToLiveMS);
         return categories;
       })
@@ -43,14 +47,36 @@ define("storage", ["js/libs/q/q.js", "data"], function (Q, dataService) {
 
     },
 
+    getCategory:function getCategory(id){
+      if ( !localStorage["categories"] ){
+        return self.loadCategories().then(function(categories){
+          return categories;
+        });
+      }else{
+        return self.getAllCategories().then(function(categories){
+          var ret= categories.filter(function(category){
+            return category.id == id;
+          });
+          if(ret.length > 0)
+            return ret[0]
+          return null;
+        });
+      }
+
+    },
+
     categoriesExpired: function categoriesExpired(){
       return false;
     },
 
+    ///////////////////////////////////////////////////////////////////
+    /// Graph Item Stuff
+    ///////////////////////////////////////////////////////////////////
     loadGraphItems: function loadGraphItems(){
       return dataService.getAllGraphItems().then(function(items){
         items.forEach(function(item){
           localStorage["graph-item:"+item.id] = JSON.stringify( item );
+          console.dir("Storage: Added graph-item:"+item.id, item);
         });
         localStorage["graph-item-updated"] = ""+(new Date().getMilliseconds() + graphItemTimeToLiveMS);
         return items;
@@ -59,6 +85,13 @@ define("storage", ["js/libs/q/q.js", "data"], function (Q, dataService) {
 
     addGraphItem: function addGraphItem(graphItem){
       return dataService.createGraphItem(graphItem).then(function(updatedItem){
+        localStorage["graph-item:"+updatedItem.id] = JSON.stringify( updatedItem);
+        return updatedItem;
+      })
+    },
+
+    updateGraphItem: function updateGraphItem(graphItem){
+      return dataService.updateGraphItem(graphItem).then(function(updatedItem){
         localStorage["graph-item:"+updatedItem.id] = JSON.stringify( updatedItem);
         return updatedItem;
       })
@@ -100,10 +133,13 @@ define("storage", ["js/libs/q/q.js", "data"], function (Q, dataService) {
     graphItemsExpired: function graphItemsExpired(){
       return false;
     },
-
+    ///////////////////////////////////////////////////////////////////
+    /// Relationship Def Stuff
+    ///////////////////////////////////////////////////////////////////
     loadRelationships: function loadRelationships(){
       return dataService.getRelationshipDefs().then(function(relationships){
         localStorage["graph-relationships"] = JSON.stringify(relationships);
+        console.dir("Storage: Added graph-relationships:", relationships);
         localStorage["graph-relationships-updated"] = ""+(new Date().getMilliseconds());
         return relationships;
       });
@@ -132,6 +168,43 @@ define("storage", ["js/libs/q/q.js", "data"], function (Q, dataService) {
 
     },
     relationshipsExpired: function relationshipsExpired(){
+      return false;
+    },
+    ///////////////////////////////////////////////////////////////////
+    /// Item Relationship Stuff
+    ///////////////////////////////////////////////////////////////////
+    loadItemRelationships: function loadItemRelationships(){
+      return dataService.getAllItemRelationships().then(function(itemRelationships){
+        localStorage["graph-item-relationships"] = JSON.stringify(itemRelationships);
+        console.dir("Storage: Added graph-item-relationships:", itemRelationships);
+        localStorage["graph-item-relationships-updated"] = ""+(new Date().getMilliseconds());
+        return itemRelationships;
+      });
+    },
+    addItemRelationship: function addItemRelationship(itemRelationship){
+      return dataService.createRelationship(itemRelationship).then(function(updatedRelationship){
+        return self.getAllItemRelationships().then(function(itemRelationships){
+          itemRelationships.push(updatedRelationship);
+          localStorage["graph-item-relationships"] = JSON.stringify( itemRelationships );
+          return updatedRelationship;
+        });
+      })
+    },
+
+    getAllItemRelationships:function getAllItemRelationships(){
+      if ( !localStorage["graph-item-relationships"] ){
+        return self.loadItemRelationships().then(function(relationships){
+          return relationships;
+        })
+      }else{
+        var deferred = Q.defer();
+        deferred.resolve(JSON.parse(localStorage["graph-item-relationships"]));
+        return deferred.promise;
+      }
+
+    },
+
+    itemRelationshipsExpired: function itemRelationshipsExpired(){
       return false;
     }
 
