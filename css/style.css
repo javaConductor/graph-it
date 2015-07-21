@@ -6,9 +6,10 @@
 }
 
 .graph-item {
-  height: 8em;
-  width: 8em;
-  background-color: navy;
+  height: 9em;
+  width: 9em;
+
+  background-image: url("/graph-it/images/metal_background_of_highdefinition_picture_3_169713.jpg");
   border: double;
   text-align: center;
 }
@@ -28,13 +29,12 @@
 }
 
 .graph-image {
-  height: 6em;
-  width: 7.5em;
+  height: 7.0em;
+  width: 8em;
   background-color: navy;
   /*border: ridge;*/
   margin-left: auto;
   margin-right: auto;
-
   border-collapse: inherit;
 }
 
@@ -70,6 +70,11 @@
 #new-item-dialog {
   background-color: lightsteelblue;
 
+}
+
+
+.graph-relationship {
+  /*background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);*/
 }
 
 .ui-dialog { background: #87a5be no-repeat right bottom fixed; }

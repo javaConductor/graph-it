@@ -47,8 +47,7 @@ define("toolbar",["graph","relationship","storage"], function(graphService, rela
 
   var createNewItem = function createNewItem(config){
     return storageService.addGraphItem( new GraphItem(config)). then(function( graphItem){
-      var div = graphService.createGraphItemElement(graphItem);
-      $("#graph-view").append( div );
+      graphService.createGraphItemElements($("#graph-view"), [graphItem]);
       return graphItem;
     });
   };

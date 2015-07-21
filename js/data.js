@@ -2,7 +2,7 @@
  * Created by lcollins on 6/29/2015.
  */
 
-define("data", ["js/libs/q/q.js"], function (Q) {
+define("data", ["Q"], function (Q) {
 
   var prefix = "http://" + window.location.hostname + ":8888/";
   return {
@@ -34,6 +34,46 @@ define("data", ["js/libs/q/q.js"], function (Q) {
       return p;
 
     },
+    createItemRelationship:function(itemRelationship){
+      var url = prefix + "item-relationship";
+      var p = Q($.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(itemRelationship),
+        dataType: 'json',
+        timeout: 120000, // 120 seconds because server is so slow
+        headers: {
+          Accept: "application/json"
+        }
+      }));
+
+      p.fail(function (response) {
+        console.log('createItemRelationship failed: ', response);
+      });
+
+      return p;
+    },
+
+    createRelationship:function(relationship){
+      var url = prefix + "relationship";
+      var p = Q($.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(relationship),
+        dataType: 'json',
+        timeout: 120000, // 120 seconds because server is so slow
+        headers: {
+          Accept: "application/json"
+        }
+      }));
+
+      p.fail(function (response) {
+        console.log('createRelationship failed: ', response);
+      });
+
+      return p;
+    },
+
     getGraphItem:function(id){
       var p = Q($.get(prefix + "graph-item/"+id));
       p.fail( function(err){
@@ -74,7 +114,7 @@ define("data", ["js/libs/q/q.js"], function (Q) {
 
       var itemIdString = graphItemIds.join(",")
 
-      var url = prefix + "item-relationship";
+      var url = prefix + "item-relationship/for-items";
       var p = Q($.ajax({
         type: "POST",
         url: url,

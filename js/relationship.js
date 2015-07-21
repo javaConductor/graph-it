@@ -2,9 +2,48 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataService, storage, Q) {
+define("relationship", ["data", "storage","Q", "popupService"], function (dataService, storage, Q, popupService) {
+  var RelationshipParameter = "relationshipId";
   var self = null;
   var relationshipDefinitions;
+  var batchDrawing = false;
+
+  jsPlumb.bind("connection",function( info, evt ){
+
+    /// if it has a relationshipId then its not new - don't do anything
+    if(info.connection.getParameter(RelationshipParameter))
+      return;
+    /// display the popup
+    return popupService.selectRelationship(null)
+      .then(function(relationshipDef){
+        var sourceId = info.sourceId;
+        var targetId = info.targetId;
+        var r = new ItemRelationship();
+        r.sourceItemId = sourceId.substring(11)
+        r.relatedItemId = targetId.substring(11)
+        r.relationshipId = relationshipDef.id;
+        r.notes = ["Created: "+new Date().toLocaleDateString()]
+
+        return storage.addItemRelationship(r).then(function(itemRelationship){
+           console.dir (" Created ItemRelationship: "+ itemRelationship )
+          self.view.drawRelationship(itemRelationship);
+          return itemRelationship;
+          });
+      })
+  });
+  jsPlumb.bind("connectionDetach",function( info, evt ){
+
+    if(info.connection.getParameter(RelationshipParameter))
+      return;
+    var relId = info.connection.getParameter(RelationshipParameter)
+    /// confirn delete
+    var ok = confirm("Are you sure you want to delete this relationship?");
+    if( ok ){
+      storage.removeItemRelationship(relId).then(function(removed){
+        jsPlumb.detach(info.connection);
+      });
+    }
+  });
 
   var toMap = function (array, member) {
     return array.reduce(function (total, current) {
@@ -16,30 +55,16 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
   var obj = {
 
     getRelationshipDefs: function () {
-      var deferred = Q.defer();
-      //TODO add time if condition to refresh
-      if (!relationshipDefinitions) {
-        dataService.getRelationshipDefs().then(function (relDefs) {
-          //relationshipDefinitions = toMap(relDefs, "id");
-          deferred.resolve(relDefs);
+        return storage.getAllRelationships().then(function (relDefs) {
+          return (relDefs);
         }, function (error) {
           console.log("getRelationshipDefs Error: " + error);
-          deferred.reject("getRelationshipDefs Error: " + error);
         });
-      }
-      else {
-        deferred.resolve(relationshipDefinitions);
-      }
-      return deferred.promise;
     },
 
     getGraphItem: function (graphItemIdn) {
       return storage.getGraphItem(graphItemId)
     },
-
-    //getRelationshipsForGraphItems: function (graphItemIds) {
-    //  return dataService.getRelationshipsForGraphItems(graphItemIds)
-    //},
 
     view :{
       findGraphItem: function (graphItemId, parent) {
@@ -53,6 +78,25 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
             return this.id.match(/\d+$/);
           });
       },
+      connectionForRelationship: function(relationshipId){
+        return storage.getRelationship(relationshipId).then(function(relationship) {
+          var conn;
+          jsPlumb.getConnections({
+            source: self.graphItemIdToElementId(relationship.sourceItemId),
+            target: self.graphItemIdToElementId(relationship.targetItemId)
+          }).each(function (connection) {
+            if (relationshipId == connection.getParameter(RelationshipParameter)) {
+              conn = connection;
+            }
+            return conn;
+          });
+        })
+          },
+      removeItemRelationship: function(relationshipId) {
+          self.view.connectionForRelationship(relationshipId).then(function(connection){
+            jsPlumb.detach(connection);
+          });
+      },
       refreshRelationships: function(){
         jsPlumb.detachEveryConnection();
         return storage.getAllItemRelationships().then(function(itemRelationships){
@@ -63,22 +107,25 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
         return "graph-item:" + graphItemId;
       },
 
+      itemRelationshipIdToElementId: function (itemRelationshipId) {
+        return "graph-relationship:" + itemRelationshipId;
+      },
+
       drawRelationship: function (itemRelationship) {
-
         storage.getAllRelationships().then(function (relDefs) {
-
           var relationshipDefs = toMap(relDefs, "id");
-          //if($(self.view.graphItemIdToElementId(itemRelationship.sourceItemId)).length == 0  ||
-          //  $(self.view.graphItemIdToElementId(itemRelationship.relatedItemId)).length == 0){
-          //  console.dir("Cannot create relationship", itemRelationship);
-          //  return null;
-          //}
 
           //TODO do something different heree based on relationshipType
           return jsPlumb.connect({
             source: self.view.graphItemIdToElementId(itemRelationship.sourceItemId),
             target: self.view.graphItemIdToElementId(itemRelationship.relatedItemId),
             connector: ["Flowchart", {stub: 30}],
+            anchor:"AutoDefault",
+            endPoint: [ "Dot", { radius:75 } ],
+            cssClass:"graph-relationship",
+            parameters: {
+              relationshipId: itemRelationship.id
+            },
             overlays: [
               ["Arrow", {
                 width: 30, length: 30, location: 1,
@@ -98,15 +145,20 @@ define("relationship", ["data", "storage","js/libs/q/q.js"], function (dataServi
               ]
             ]
           });
-
         });
-
       },
       drawRelationships: function (itemRelationships) {
-        return itemRelationships.map(function (itemRelationship) {
-          self.view.drawRelationship(itemRelationship);
+        ////TODO disable jsPlumb events
+        batchDrawing = true;
+        jsPlumb.batch(function(){
+          return itemRelationships.map(function (itemRelationship) {
+            self.view.drawRelationship(itemRelationship);
+          });
         });
+        batchDrawing = false;
+        ////TODO re-enable jsPlumb events
       },
+
       findRelatedItem: function (relatedItemId, forced) {
         var deferred = Q.defer();
         var relatedItem = self.findGraphItem(relatedItemId);

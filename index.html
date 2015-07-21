@@ -22,32 +22,19 @@
 
   <script src="js/libs/jsPlumb/1.7.5/jquery.jsPlumb-1.7.5-min.js "></script>
   <script src="js/libs/requirejs/require-min.js"></script>
-
+  <script src="js/requireConfig.js">
+  </script>
   <script src="js/bootstrap.min.js">
   </script>
   <script src="js/model.js">
   </script>
-  <script src="js/data.js">
-  </script>
-  <script src="js/relationship.js">
-  </script>
-  <script src="js/graph.js">
-  </script>
   <script src="js/toolbar.js">
-  </script>
-  <script src="js/storage.js">
-  </script>
-  <script src="js/app.js">
   </script>
 </head>
 
 <body>
 
-<!--<script>-->
-  <!--var graphService = null;-->
-<!--</script>-->
-
-<div id="new-item-dialog"">
+<div id="new-item-dialog">
   <table>
     <tr>
       <th>Title</th>
@@ -59,6 +46,50 @@
     </tr>
   </table>
 </div>
+
+<!--<script type="text/template" class="new-item" id="new-item-dialog-template">-->
+  <!--<div id="new-item-dialog" class="popup">-->
+  <!--<table>-->
+    <!--<tr>-->
+      <!--<th>Title</th>-->
+      <!--<td><input type="text" id="new-item-title" class="new-item"></td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+      <!--<th>Categories</th>-->
+      <!--<td><select id="new-item-category" class="new-item">-->
+        <!--<% _.each( rc.categories, function( cat ){ %>-->
+
+        <!--<option id="<%- cat.id%>">-->
+          <!--<%- cat.name %>-->
+        <!--</option>-->
+
+        <!--<% }); %>-->
+
+      <!--</td>-->
+    <!--</tr>-->
+  <!--</table>-->
+<!--</div>-->
+<!--</script>-->
+
+<script type="text/template" class="new-item" id="relationship-selector-dialog-template">
+<div id="relationship-selector-dialog" class="popup">
+  <table>
+    <tr>
+      <th>Relationship</th>
+      <td><select id="relationship-selector-relationship" class="new-item">
+        <% _.each( rc.relationships, function( rel ){ %>
+
+        <option value="<%- rel.id%>">
+          <%- rel.name %>
+        </option>
+
+        <% }); %>
+        </select>
+      </td>
+    </tr>
+  </table>
+</div>
+</script>
 
 <h1>
   Graph O Matic
@@ -73,29 +104,12 @@
 
 </div>
 
-<!--<no-script>-->
-  <!--jsPlumb.ready(function () {-->
-    <!--jsPlumb.Defaults.Connector = [ "Flowchart", { stub:40 } ];-->
-    <!--$(function () {-->
-      <!--require(["graph","toolbar"], function (graph, toolbar) {-->
-        <!--graphService = graph;-->
-        <!--graphService.initGraphItemElements($("#graph-view")).then(function () {-->
-          <!--console.log("Started...");-->
-        <!--});-->
-      <!--});-->
-    <!--});-->
-  <!--});-->
-<!--</no-script>-->
-
 <script>
   require(["graph-it-app"], function (app) {
     app.initialize($("#graph-view"), function(app){
       var graph = app.graphService;
       var toolbar = app.toolbar;
-      graph.initGraphItemElements($("#graph-view")).then(function ($elemnts) {
-        console.log("Started...", $elemnts);
-        alert("App initialized!!!");
-      });
+        console.log("Inside Init. Here I can modify the app object.");
     });
   });
 </script>

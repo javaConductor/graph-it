@@ -4,7 +4,6 @@
 
 define("graph", ["data", "storage", "relationship"], function (dataService, storage, relationshipService) {
 
-
   var obj = {
     getCategories: function () {
       return storage.getCategories()
@@ -42,8 +41,6 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
           var tr2 = $('<tr></tr>');
           var tdImage = $("<td></td>")
           var image = $("<img class='graph-image'/>");
-          image.attr('width', 100);
-          image.attr('height', 100);
           image.attr('src', "/graph-it" + graphItem.images[0]);
           tdImage.append(image);
           tr2.append(tdImage);
@@ -57,7 +54,6 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
         div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
 
         div.draggable({
-//      containment: "#graph-view",
           cursor: "move",
           opacity: 0.35,
           snap: true,
@@ -67,7 +63,6 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
             console.log("Start ", {x: pos.left, y: pos.top});
           },
           stop: function (event, ui) {
-//        var pos = div.position();
             var pos = div.position();
             console.log("End (pos)", {x: pos.left, y: pos.top});
             console.log("End ", {x: ui.position.left, y: ui.position.top});
@@ -90,6 +85,18 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
       var divs =  graphItems.map(function (graphItem) {
         var div = self.createGraphItemElement(graphItem);
         parent.append(div);
+        jsPlumb.makeSource(div,{
+          endPoint: [ "Dot", { radius:75 } ],
+          anchors: ["Bottom","Top","Left","Right"],
+          cssClass:"graph-relationship"
+        });
+
+        jsPlumb.makeTarget(div,{
+          endpoint:[ "Rectangle", {width:30, height:20}],
+          anchor: "Top",
+          cssClass:"graph-relationship"
+        });
+
         return div;
       });
       return divs;
