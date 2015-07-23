@@ -7,7 +7,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
   var self = null;
   var relationshipDefinitions;
   var batchDrawing = false;
-
+  var viewId = "graph-view"
   jsPlumb.bind("connection",function( info, evt ){
 
     /// if it has a relationshipId then its not new - don't do anything
@@ -22,15 +22,17 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
         r.sourceItemId = sourceId.substring(11)
         r.relatedItemId = targetId.substring(11)
         r.relationshipId = relationshipDef.id;
-        r.notes = ["Created: "+new Date().toLocaleDateString()]
+        r.notes = [ "Created: "+new Date().toLocaleString() ]
 
         return storage.addItemRelationship(r).then(function(itemRelationship){
-           console.dir (" Created ItemRelationship: "+ itemRelationship )
-          self.view.drawRelationship(itemRelationship);
+          console.dir (" Created ItemRelationship: "+ itemRelationship )
+          jsPlumb.detach(info.connection);
+          self.view.drawRelationships([itemRelationship]);
           return itemRelationship;
           });
       })
   });
+
   jsPlumb.bind("connectionDetach",function( info, evt ){
 
     if(info.connection.getParameter(RelationshipParameter))
@@ -62,7 +64,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
         });
     },
 
-    getGraphItem: function (graphItemIdn) {
+    getGraphItem: function (graphItemId) {
       return storage.getGraphItem(graphItemId)
     },
 
@@ -83,7 +85,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
           var conn;
           jsPlumb.getConnections({
             source: self.graphItemIdToElementId(relationship.sourceItemId),
-            target: self.graphItemIdToElementId(relationship.targetItemId)
+            target: self.graphItemIdToElementId(relationship.relatedItemId)
           }).each(function (connection) {
             if (relationshipId == connection.getParameter(RelationshipParameter)) {
               conn = connection;
@@ -114,13 +116,19 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
       drawRelationship: function (itemRelationship) {
         storage.getAllRelationships().then(function (relDefs) {
           var relationshipDefs = toMap(relDefs, "id");
+          var dynamicAnchors = [ [ 0.2, 0, 0, -1 ],  [ 1, 0.2, 1, 0 ],
+            [ 0.8, 1, 0, 1 ], [ 0, 0.8, -1, 0 ] ];
 
           //TODO do something different heree based on relationshipType
           return jsPlumb.connect({
             source: self.view.graphItemIdToElementId(itemRelationship.sourceItemId),
             target: self.view.graphItemIdToElementId(itemRelationship.relatedItemId),
-            connector: ["Flowchart", {stub: 30}],
-            anchor:"AutoDefault",
+            connector: [ "Bezier", { curviness:140 } ],
+            anchor: dynamicAnchors,
+
+            hoverPaintStyle:{ strokeStyle:"cyan" },
+            endpointHoverStyle:{ fillStyle:"red" },
+
             endPoint: [ "Dot", { radius:75 } ],
             cssClass:"graph-relationship",
             parameters: {
@@ -129,6 +137,10 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
             overlays: [
               ["Arrow", {
                 width: 30, length: 30, location: 1,
+                hoverPaintStyle:{
+                  strokeStyle:"cyan",
+                  fillStyle: "navy"
+                },
                 paintStyle: {
                   fillStyle: "white",
                   outlineColor: "navy",
@@ -140,7 +152,11 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
               ["Label", {
                 label: relationshipDefs[itemRelationship.relationship.id].name,
                 cssClass: "simple-relationship-label",
-                id: "graph-relationship-label:" + itemRelationship.id
+                id: "graph-relationship-label:" + itemRelationship.id,
+                hoverPaintStyle:{
+                  strokeStyle:"cyan",
+                  fillStyle: "navy"
+                }
               }
               ]
             ]

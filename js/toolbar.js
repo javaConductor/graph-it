@@ -2,7 +2,6 @@
  * Created by lcollins on 7/12/2015.
  */
 
-
 define("toolbar",["graph","relationship","storage"], function(graphService, relationshipService, storageService){
 
   $().ready(function() {
@@ -57,8 +56,9 @@ define("toolbar",["graph","relationship","storage"], function(graphService, rela
     openNewItemDialog: function() {
 //      newItemDialog.dialog("open");
       return storageService.getAllCategories().then(function (categories) {
+        $("#new-item-category").empty();
         categories.forEach(function (category) {
-          var $opt = $("<option value='" + category.id + "'>" + category.name + "</option>")
+          var $opt = $("<option value='" + category.id + "'>" + category.name + "</option>");
           $("#new-item-category").append($opt);
         });
 
