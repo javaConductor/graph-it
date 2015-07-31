@@ -5,8 +5,15 @@
 define("data", ["Q"], function (Q) {
 
   var prefix = "http://" + window.location.hostname + ":8888/";
-  return {
+  var self;
+  var obj =  {
 
+    getLocation:function(){
+        return {
+        host: window.location.hostname,
+        port: 8888
+        }
+    },
     getCategories:function(){
       var p = Q($.get(prefix + "category"));
       p.fail( function(err){
@@ -79,6 +86,17 @@ define("data", ["Q"], function (Q) {
       p.fail( function(err){
         console.log("getAllGraphItems Error: "+err)
       });
+     p.then(function (data) {
+         // fix the image urls
+        var dataLocation = self.getLocation()
+        var images = data.images.map(function(img){
+            var path = "http://"+location.host+":"+location.port + img.imagePath;
+            img.imagePath=path;
+            return img;
+        })
+        data.images=images;
+        return data; 
+      });
       return p;
     },
     getRelationshipDefs: function () {
@@ -107,6 +125,23 @@ define("data", ["Q"], function (Q) {
       p.fail( function(err){
         console.log("getAllGraphItems Error: "+err)
       });
+        
+        p.then(function(dataList){
+        var dataLocation = self.getLocation()
+
+        return dataList.map(function(data){
+            var images = data.images.map(function(img){
+                var path = "http://"+dataLocation.host+":"+dataLocation.port + img.imagePath;
+                img.imagePath=path;
+                return img;
+            })
+            data.images=images;
+            return data; 
+        })
+        
+        
+        });
+        
       return p;
     },
 
@@ -170,5 +205,7 @@ define("data", ["Q"], function (Q) {
       });
       return p;
     }
-  }
+  };
+    self = obj;
+    return obj;
 });

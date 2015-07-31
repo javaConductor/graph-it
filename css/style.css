@@ -9,7 +9,7 @@
   height: 14em;
   width: 24em;
 
-  background-image: url("/graph-it/images/metal_background_of_highdefinition_picture_3_169713.jpg");
+  background-image: url("/mages/metal_background_of_highdefinition_picture_3_169713.jpg");
   border: double;
   text-align: center;
 }
@@ -30,7 +30,7 @@ textarea.graph-item-notes{
   height: 100%;
   vertical-align: middle;
   text-align: center;
-  background-image: url("/graph-it/images/metal_background_of_highdefinition_picture_3_169713.jpg");
+  background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
 }
 
 .graph-item-notes-header{
@@ -51,7 +51,7 @@ textarea.graph-item-notes{
   border-right: ridge;
   border-collapse: collapse;
   /*background-color: navy;*/
-  background-image: url("/graph-it/images/metal_background_of_highdefinition_picture_3_169713.jpg");
+  background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
   color: #ffffff;
 }
 

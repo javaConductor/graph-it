@@ -36,6 +36,9 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
         $("#graph-item-template").html()
       );
 
+    
+        
+        
 //      $("body").append(template(graphItem));
       var div = $(template(graphItem));
       div.draggable({
@@ -85,7 +88,7 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
           var tr2 = $('<tr></tr>');
           var tdImage = $("<td></td>")
           var image = $("<img class='graph-image'/>");
-          image.attr('src', "/graph-it" + graphItem.images[0]);
+          image.attr('src', "/graph-it" + graphItem.images[0].imagePath);
           tdImage.append(image);
           tr2.append(tdImage);
           table.append(tr2);
