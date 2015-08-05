@@ -65,7 +65,6 @@ define("storage", ["Q", "data"], function (Q, dataService) {
           return (ret.length > 0) ? ret[0] : null;
         });
       }
-
     },
 
     categoriesExpired: function categoriesExpired(){
@@ -91,6 +90,15 @@ define("storage", ["Q", "data"], function (Q, dataService) {
         localStorage[graphItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
         return updatedItem;
       })
+    },
+
+    addGraphItemFromForm: function addGraphItemFromForm(formData){
+        var p = dataService.createGraphItemFromForm(formData);
+        p.then(function(updatedItem){
+            localStorage[graphItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
+            return updatedItem;
+        });
+        return p
     },
 
     updateGraphItem: function updateGraphItem(graphItem){

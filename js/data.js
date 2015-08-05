@@ -14,6 +14,7 @@ define("data", ["Q"], function (Q) {
         port: 8888
         }
     },
+
     getCategories:function(){
       var p = Q($.get(prefix + "category"));
       p.fail( function(err){
@@ -21,6 +22,7 @@ define("data", ["Q"], function (Q) {
       });
       return p;
     },
+      
     createGraphItem:function(graphItem){
       var url = prefix + "graph-item";
       var p = Q($.ajax({
@@ -32,15 +34,45 @@ define("data", ["Q"], function (Q) {
         headers: {
           Accept: "application/json"
         }
-      }));
-
+      })).then(function(graphItem){
+            graphItem.images = self._fixImageLink(graphItem.images);
+            graphItem.data = graphItem.data || [];
+            graphItem.notes = graphItem.notes || [];
+            return graphItem;
+        });
       p.fail(function (response) {
         console.log('createGraphItem failed: ', response);
       });
-
       return p;
-
     },
+      
+    createGraphItemFromForm:function( formData ){
+        var url = prefix + "graph-item/form";
+
+        var p = Q($.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,//.serialize(),//$( "#graph-item-form" ).serialize(),
+            timeout: 120000, // 120 seconds because server is so slow
+            headers: {
+              Accept: "application/json"
+            },
+            processData: false,  // tell jQuery not to process the data
+            contentType: false   // tell jQuery not to set contentType
+        })).then(function(graphItem){
+            graphItem.images = self._fixImageLink(graphItem.images);
+            graphItem.data = graphItem.data || [];
+            graphItem.notes = graphItem.notes || [];
+            return graphItem;
+        });
+          
+        p.fail(function (response) {
+            console.log('createGraphItemFromForm failed: ', response);
+        });
+
+        return p;
+      },
+            
     createItemRelationship:function(itemRelationship){
       var url = prefix + "item-relationship";
       var p = Q($.ajax({
@@ -80,6 +112,18 @@ define("data", ["Q"], function (Q) {
 
       return p;
     },
+      
+      _fixImageLink:function(images){
+        var dataLocation = self.getLocation()
+        return images.map(function(img){
+            if( -1 == img.imagePath.indexOf(dataLocation.host+":"+dataLocation.port)){
+                var path = "http://"+dataLocation.host+":"+dataLocation.port + img.imagePath;
+                img.imagePath=path;
+            }
+            return img;
+        })
+
+      },
 
     getGraphItem:function(id){
       var p = Q($.get(prefix + "graph-item/"+id));
@@ -88,12 +132,7 @@ define("data", ["Q"], function (Q) {
       });
      p.then(function (data) {
          // fix the image urls
-        var dataLocation = self.getLocation()
-        var images = data.images.map(function(img){
-            var path = "http://"+location.host+":"+location.port + img.imagePath;
-            img.imagePath=path;
-            return img;
-        })
+        var images = self._fixImageLink( data.images ); 
         data.images=images;
         return data; 
       });
@@ -127,21 +166,18 @@ define("data", ["Q"], function (Q) {
       });
         
         p.then(function(dataList){
-        var dataLocation = self.getLocation()
-
-        return dataList.map(function(data){
-            var images = data.images.map(function(img){
-                var path = "http://"+dataLocation.host+":"+dataLocation.port + img.imagePath;
-                img.imagePath=path;
-                return img;
-            })
-            data.images=images;
-            return data; 
-        })
-        
-        
-        });
-        
+            var dataLocation = self.getLocation();
+            return dataList.map(function(data){
+                var images = data.images.map(function(img){
+                    var path = "http://"+dataLocation.host+":"+dataLocation.port + img.imagePath;
+                    img.imagePath=path;
+                    return img;
+                });
+                data.images=images;
+                data.data = data.data || [];
+                return data; 
+                });
+        });        
       return p;
     },
 
@@ -205,7 +241,7 @@ define("data", ["Q"], function (Q) {
       });
       return p;
     }
-  };
+  };//obj
     self = obj;
     return obj;
 });

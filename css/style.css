@@ -73,13 +73,13 @@ textarea.graph-item-notes{
 .graph-title {
   height: 100%;
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 5px;
+  margin-right: 5px;
   color: navy;
   font-weight: 900;
-
+background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");
+  
   background-color: white;
-  display: inline-block;
   vertical-align: middle;
   text-align: center;
 }

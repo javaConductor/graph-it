@@ -2,8 +2,10 @@
  * Created by lcollins on 7/12/2015.
  */
 
-define("toolbar",["graph","relationship","storage"], function(graphService, relationshipService, storageService){
+define("toolbar",["graph","relationship","storage","data"], function(graphService, relationshipService, storageService, dataService){
 
+    var creationPosition  = {x: 100, y:100}
+    
   $().ready(function() {
     var $toolbar = $("#graph-toolbar");
   });
@@ -18,18 +20,15 @@ define("toolbar",["graph","relationship","storage"], function(graphService, rela
     buttons: {
       "Create Item": function (evt) {
         var title = $("#new-item-title").val();
-        var categoryId = $("#new-item-category").val();
-        storageService.getCategory( categoryId)
-          .then(function(category){
-            return createNewItem({
-            position: {x: 200, y: 200},
-            categories: [ category ],
-            title: title})
+          alert("Creating item "+ title);
+          var formData = new FormData($('#graph-item-form')[0])
+            return createNewItemFromForm({
+                formData: formData })
           .then(function (graphItem) {
+            alert("Created item "+ title);
             newItemDialog.dialog("close");
             newItemDialog.hide();
-            return graphItem;})
-        })
+            return graphItem;})          
       },
       Cancel: function () {
         newItemDialog.dialog("close");
@@ -37,6 +36,31 @@ define("toolbar",["graph","relationship","storage"], function(graphService, rela
       }
     }
   });
+
+    $("#new-item-form").on("submit",function(event){
+         event.preventDefault();
+        var title = $("#new-item-title").val();
+          console.log("Creating item "+ title);
+        
+          var formData = new FormData(document.querySelector("#graph-item-form"))
+            return createNewItemFromForm({
+                formData: formData })
+          .then(function (graphItem) {
+            console.log("Created item "+ title);
+            newItemDialog.dialog("close");
+            newItemDialog.hide();
+            return graphItem;})          
+    
+    });
+  var createNewItemFromForm = function( newItemProperties ){
+      var formData = newItemProperties.formData;
+      return storageService.addGraphItemFromForm(formData ).then(function(graphItem){
+        var div = graphService.createGraphItemElements($("#graph-view"), [graphItem]);
+
+        return graphItem;
+      });
+  };
+    
 
   newItemDialog.hide();
 
