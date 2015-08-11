@@ -65,29 +65,68 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
             });
           }
         });
-      div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
-      return div;
+        div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
+        var divSelector = '#'+div.attr("id");
+        $(divSelector).focusin(function(){
+            console.log("focus: "+ this);
+            $(divSelector).css('border-style','solid');
+        }).focusout(function(){
+            console.log("blur: "+ this);
+            $(divSelector).css('border-style','dashed');
+        });
+
+        div.find(".graph-item-notes" ).blur(function(evt){
+            var notes = div.find(".graph-item-notes" ).val();
+            console.log("updating notes: "+graphItem.id+" to "+ "["+notes+"]" );
+            storage.getGraphItem(graphItem.id).then(function(item){
+                if(notes != item.notes){
+                    storage.updateGraphItemNotes( graphItem.id, notes).then(function(updatedItem){
+                        div.find(".graph-item-notes" ).val( updatedItem.notes );
+                    });
+                }
+            });
+        });
+
+        return div;
     },
 
     createGraphItemElements: function (parent, graphItems) {
-      var divs =  graphItems.map(function (graphItem) {
+      var divs =  graphItems.map(function (graphItem, idx) {
         var div = self.createGraphItemElement(graphItem);
         parent.append(div);
         var dynamicAnchors = [ [ 0.2, 0, 0, -1 ],  [ 1, 0.2, 1, 0 ],
           [ 0.8, 1, 0, 1 ], [ 0, 0.8, -1, 0 ] ];
 
+          
+          var endpointOptions = {
+    anchor:[ "TopCenter", "BottomCenter" ], 
+      isSource:true, 
+      isTarget:true,
+      connector : "Straight",
+      connectorStyle: { lineWidth:20, strokeStyle:'blue' },
+      scope:"blueline",
+      dragAllowedWhenFull:false  
+}; 
+   
+    jsPlumb.addEndpoint( div.attr("id"), { uuid: div.attr("id")}, endpointOptions );
+/*
         jsPlumb.makeSource(div,{
-          endPoint: [ "Dot", { radius:50 } ],
-          anchor: dynamicAnchors,//["Continuous", {faces:["top","bottom","left","right"]}],
+          //endPoint: [ "Dot", { radius:50 } ],
+          //anchor: dynamicAnchors,//["Continuous", {faces:["top","bottom","left","right"]}],
           cssClass:"graph-relationship"
         });
 
         jsPlumb.makeTarget(div,{
-          endpoint:[ "Rectangle", {width:30, height:5}],
-          anchor: ["Continuous", {faces:["top","bottom","left","right"]}],
+          //endpoint:[ "Rectangle", {width:30, height:5}],
+          //anchor: ["Continuous", {faces:["top","bottom","left","right"]}],
           cssClass:"graph-relationship"
         });
-
+  */        
+        var tabIndex = idx * 10;          
+        div.attr("tabIndex", tabIndex);
+        div.find(".graph-item-notes" ).attr("tabIndex", tabIndex + 1);
+        //div.find(".graph-item-note" ).attr("tabIndex", tabIndex + 2);
+        //div.find(".graph-item-add-note" ).attr("tabIndex", tabIndex + 3);
 
         return div;
       });

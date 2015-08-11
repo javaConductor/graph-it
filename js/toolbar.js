@@ -11,7 +11,7 @@ define("toolbar",["graph","relationship","storage","data"], function(graphServic
   });
 
   // New Item Dialog
-  var newItemDialog = $("#new-item-dialog").dialog({
+var newItemDialog = $("#new-item-dialog").dialog({
     autoOpen: false,
     height: 300,
     width: 350,
@@ -55,7 +55,7 @@ define("toolbar",["graph","relationship","storage","data"], function(graphServic
   var createNewItemFromForm = function( newItemProperties ){
       var formData = newItemProperties.formData;
       return storageService.addGraphItemFromForm(formData ).then(function(graphItem){
-        var div = graphService.createGraphItemElements($("#graph-view"), [graphItem]);
+        graphService.createGraphItemElements($("#graph-view"), [graphItem]);
 
         return graphItem;
       });
@@ -86,6 +86,7 @@ define("toolbar",["graph","relationship","storage","data"], function(graphServic
           $("#new-item-category").append($opt);
         });
 
+          $("#new-item-creation_date").val(new Date().toUTCString());
         newItemDialog.show();
         newItemDialog.dialog("open");
         return newItemDialog;

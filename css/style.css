@@ -14,10 +14,14 @@
   text-align: center;
 }
 
+.graph-item-selected {
+  border: double; 
+    
+}
+
 .graph-item-new-note{
   background-color: navy;
   color: #ffffff;
-
 }
 
 .graph-item-notes{
@@ -28,8 +32,9 @@
 textarea.graph-item-notes{
   width: 100%;
   height: 100%;
-  vertical-align: middle;
-  text-align: center;
+  vertical-align: top;
+  text-align: left;
+
   background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
 }
 
@@ -86,7 +91,7 @@ background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.c
 
 .graph-view {
   height: 90em;
-  width: 105em;
+  width: 100%;
   border-style: ridge;
   position: relative;
   /*background-color: lightsteelblue;*/

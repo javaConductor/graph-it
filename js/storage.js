@@ -107,6 +107,14 @@ define("storage", ["Q", "data"], function (Q, dataService) {
         return updatedItem;
       })
     },
+      
+    updateGraphItemNotes: function updateGraphItemNotes(graphItemId, notes){
+      return dataService.updateGraphItemNotes(graphItemId, notes).then(function(updatedItem){
+        localStorage[graphItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
+        return updatedItem;
+      })
+    },
+      
 
     getAllGraphItems: function getAllGraphItems(){
       if ( !localStorage["graph-item-updated"] ){

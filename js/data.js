@@ -8,7 +8,7 @@ define("data", ["Q"], function (Q) {
   var self;
   var obj =  {
 
-    getLocation:function(){
+    _getLocation:function(){
         return {
         host: window.location.hostname,
         port: 8888
@@ -37,7 +37,7 @@ define("data", ["Q"], function (Q) {
       })).then(function(graphItem){
             graphItem.images = self._fixImageLink(graphItem.images);
             graphItem.data = graphItem.data || [];
-            graphItem.notes = graphItem.notes || [];
+            graphItem.notes = graphItem.notes || "";
             return graphItem;
         });
       p.fail(function (response) {
@@ -62,7 +62,7 @@ define("data", ["Q"], function (Q) {
         })).then(function(graphItem){
             graphItem.images = self._fixImageLink(graphItem.images);
             graphItem.data = graphItem.data || [];
-            graphItem.notes = graphItem.notes || [];
+            graphItem.notes = graphItem.notes || "";
             return graphItem;
         });
           
@@ -113,31 +113,53 @@ define("data", ["Q"], function (Q) {
       return p;
     },
       
-      _fixImageLink:function(images){
-        var dataLocation = self.getLocation()
+    _fixImageLink: function _fixImageLink(images){
+        var dataLocation = self._getLocation()
         return images.map(function(img){
             if( -1 == img.imagePath.indexOf(dataLocation.host+":"+dataLocation.port)){
                 var path = "http://"+dataLocation.host+":"+dataLocation.port + img.imagePath;
                 img.imagePath=path;
             }
             return img;
-        })
-
+        });
       },
 
-    getGraphItem:function(id){
-      var p = Q($.get(prefix + "graph-item/"+id));
-      p.fail( function(err){
-        console.log("getAllGraphItems Error: "+err)
+    updateGraphItemNotes: function updateGraphItemNotes(graphItemId, notes){
+      var url = prefix + "graph-item/" + graphItemId + "/notes";
+      notes = notes.trim();
+      var p = Q($.ajax({
+        type: "PUT",
+        url: url,
+          data: notes,
+        dataType: 'text',
+        timeout: 12000, // 12 seconds because server is so slow
+        headers: {
+          Accept: "application/json"
+        }
+      }));
+      p.fail(function (response) {
+        console.log('Update Notes failed: ', JSON.stringify(response));
       });
-     p.then(function (data) {
-         // fix the image urls
-        var images = self._fixImageLink( data.images ); 
-        data.images=images;
-        return data; 
+      return p.then(function(graphItemJson){
+          console.log("updateGraphItemNotes: ");
+        return JSON.parse(graphItemJson)
       });
-      return p;
     },
+      
+    getGraphItem: function(id){
+        var p = Q($.get(prefix + "graph-item/"+id));
+        p.fail( function(err){
+            console.log("getAllGraphItems Error: "+err)
+        });
+        return p.then(function (data) {
+         // fix the image urls
+            var images = self._fixImageLink( data.images ); 
+            data.notes=notes.trim();
+            data.images=images;
+            return data; 
+      });
+    },
+      
     getRelationshipDefs: function () {
       var deferred = Q.defer();
       var url = prefix + "relationship";
@@ -166,14 +188,12 @@ define("data", ["Q"], function (Q) {
       });
         
         p.then(function(dataList){
-            var dataLocation = self.getLocation();
+            var dataLocation = self._getLocation();
             return dataList.map(function(data){
-                var images = data.images.map(function(img){
-                    var path = "http://"+dataLocation.host+":"+dataLocation.port + img.imagePath;
-                    img.imagePath=path;
-                    return img;
-                });
+                var images = self._fixImageLink( data.images );
                 data.images=images;
+                data.notes= data.notes || "";
+                data.notes= data.notes.trim();
                 data.data = data.data || [];
                 return data; 
                 });
