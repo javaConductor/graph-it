@@ -103,7 +103,7 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
       isSource:true, 
       isTarget:true,
       connector : "Straight",
-      connectorStyle: { lineWidth:20, strokeStyle:'blue' },
+      connectorStyle: { lineWidth:2, strokeStyle:'navy' },
       scope:"blueline",
       dragAllowedWhenFull:false  
 }; 
@@ -122,12 +122,9 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
           cssClass:"graph-relationship"
         });
   */        
-        var tabIndex = idx * 10;          
+        var tabIndex = 1 + (idx * 10);
         div.attr("tabIndex", tabIndex);
         div.find(".graph-item-notes" ).attr("tabIndex", tabIndex + 1);
-        //div.find(".graph-item-note" ).attr("tabIndex", tabIndex + 2);
-        //div.find(".graph-item-add-note" ).attr("tabIndex", tabIndex + 3);
-
         return div;
       });
       return divs;

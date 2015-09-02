@@ -15,6 +15,8 @@ define("storage", ["Q", "data"], function (Q, dataService) {
   var graphItemUpdateKey = "graph-item-updated";
   var itemRelationshipKeyPrefix = "graph-item-relationships:"
   var itemRelationshipUpdateKey = "graph-item-relationships-updated"
+  var graphItemTypePrefix = "graph-item-type:"
+  var graphItemTypeUpdateKey = "graph-item-type-updated"
   var obj =  {
 
     ///////////////////////////////////////////////////////////////////
@@ -107,14 +109,14 @@ define("storage", ["Q", "data"], function (Q, dataService) {
         return updatedItem;
       })
     },
-      
+
     updateGraphItemNotes: function updateGraphItemNotes(graphItemId, notes){
       return dataService.updateGraphItemNotes(graphItemId, notes).then(function(updatedItem){
         localStorage[graphItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
         return updatedItem;
       })
     },
-      
+
 
     getAllGraphItems: function getAllGraphItems(){
       if ( !localStorage["graph-item-updated"] ){
@@ -248,6 +250,72 @@ define("storage", ["Q", "data"], function (Q, dataService) {
 
     itemRelationshipsExpired: function itemRelationshipsExpired(){
       return false;
+    },
+    ///////////////////////////////////////////////////////////////////
+    /// Item Type Stuff
+    ///////////////////////////////////////////////////////////////////
+
+    loadItemTypes: function loadItemTypes(){
+      return dataService.getAllTypes().then(function(itemTypes){
+        itemTypes.forEach(function(itemType){
+          localStorage[graphItemTypePrefix+itemType.id] = JSON.stringify(itemType);
+          console.dir("Storage: Added item-type:"+itemType.id, itemType);
+        });
+        localStorage[graphItemTypeUpdateKey] = ""+(new Date().getMilliseconds());
+        return itemTypes;
+      });
+    },
+
+    findTypeByName: function (types, typeName) {
+      return _.find(types, function(type){
+        return typeName == type.name;
+      });
+    },
+
+    getTypeByName: function(typeName) {
+        return self.getAllTypes().then(function(types) {
+          return self.findTypeByName(types, typeName);
+        });
+    },
+
+      getAllTypes:function getAllTypes(){
+      if ( !localStorage[graphItemTypeUpdateKey] ){
+        return self.loadItemTypes().then(function(itemTypes){
+          return itemTypes;
+        })
+      }else{
+        var deferred = Q.defer();
+          var ret = [];
+          var itemTypeRegEx = new RegExp('^' + graphItemTypePrefix);
+
+        for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+          var key = localStorage.key( i );
+          var value = localStorage.getItem(key);
+          console.log( localStorage.getItem( localStorage.key( i ) ) );
+          if(itemTypeRegEx.test(key) ){
+            // add type to list
+            ret.push(  JSON.parse(value) );
+          }
+        }
+
+        deferred.resolve(ret);
+        return deferred.promise;
+      }
+
+    },
+
+
+    getType: function getType(typeId){
+      if ( !localStorage[graphItemTypePrefix+typeId] ){
+        return dataService.getType(typeId).then(function(type){
+          localStorage[graphItemTypePrefix+ typeId] = JSON.stringify(type);
+          return type;
+        });
+      }else{
+        var deferred = Q.defer();
+        deferred.resolve(JSON.parse(localStorage[graphItemTypePrefix+ typeId]));
+        return deferred.promise;
+      }
     }
 
   };

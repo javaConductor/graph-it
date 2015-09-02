@@ -10,6 +10,8 @@ requirejs.config({
     storage: "storage",
     graph: "graph",
     data: "data",
+    typeSystem: "typeSystem",
+    elementId: "elementId",
     relationship: "relationship",
     "graph-it-app": "app",
     underscore: "libs/underscore/underscore-min"

@@ -18,6 +18,8 @@
   <!-- LOCAL -->
   <script src="js/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="js/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script src="js/libs/jquery-ui-timepicker-addon/1.5.3/jquery-ui-timepicker-addon.js"></script>
+  <script src="js/libs/jquery-mask-plugin/1.13.4/jquery.mask.min.js"></script>
   <script src="js/libs/jsRender/1.0pre35/jsrender.min.js"></script>
 
   <script src="js/libs/jsPlumb/1.7.5/jquery.jsPlumb-1.7.5-min.js "></script>
@@ -37,11 +39,15 @@
 <div id="new-item-dialog">
     <form method="post" enctype="multipart/form-data" action="/graph-item/form" id="graph-item-form">
         <input type="hidden" name="new-item-creation_date" id="new-item-creation_date" >
-        
+
   <table>
     <tr>
       <th>Title</th>
       <td><input type="text" name="title" id="new-item-title" class="new-item"></td>
+    </tr>
+    <tr>
+      <th>Type</th>
+      <td><select id="new-item-type" name="type" class="new-item"/></td>
     </tr>
     <tr>
       <th>Categories</th>
@@ -49,12 +55,21 @@
     </tr>
     <tr>
       <th>Position</th>
-        <td>x: <input type="text" name="position.x" id="position.x" class="new-item" value="200"><br/>y: <input type="text" name="position.y" id="position.y" class="new-item" value="200" ></td>
+        <td>x: <input type="text" name="position.x" id="position.x" class="new-item" value="200"><br/>
+                 y: <input type="text" name="position.y" id="position.y" class="new-item" value="200" >
+        </td>
     </tr>
+
     <tr>
       <th>Image</th>
       <td><input type="file"  id="new-item-image" name="image" class="new-item"/></td>
     </tr>
+    <tr>
+      <th colspan="2">D A T A</th>
+    </tr>
+
+    <tbody id="new-item-properties" >
+    </tbody>
     <tr>
       <td colspan="2"><input type="submit"  value="Create Item" id="new-item-submit" name="submit" class="new-item"/></td>
     </tr>
@@ -62,29 +77,6 @@
         </form>
 </div>
 
-<!--<script type="text/template" class="new-item" id="new-item-dialog-template">-->
-  <!--<div id="new-item-dialog" class="popup">-->
-  <!--<table>-->
-    <!--<tr>-->
-      <!--<th>Title</th>-->
-      <!--<td><input type="text" id="new-item-title" class="new-item"></td>-->
-    <!--</tr>-->
-    <!--<tr>-->
-      <!--<th>Categories</th>-->
-      <!--<td><select id="new-item-category" class="new-item">-->
-        <!--<% _.each( rc.categories, function( cat ){ %>-->
-
-        <!--<option id="<%- cat.id%>">-->
-          <!--<%- cat.name %>-->
-        <!--</option>-->
-
-        <!--<% }); %>-->
-
-      <!--</td>-->
-    <!--</tr>-->
-  <!--</table>-->
-<!--</div>-->
-<!--</script>-->
 
 <script type="text/template" class="new-item" id="relationship-selector-dialog-template">
 <div id="relationship-selector-dialog" class="popup">
@@ -130,7 +122,7 @@
           <tr><td>
             <textarea rows="7" class="graph-item-notes" id="<%- 'graph-item-notes:'+ rc.id %>" ><%- rc.notes  %></textarea>
           </td></tr>
-          
+
         </table>
     </td>
     </tr>
@@ -141,13 +133,13 @@
         <th colspan="2">D A T A</th>
       </tr>
 
-      <% _.each( rc.data, function( dataElement ){ %>
+      <% _.each( rc.data, function( property ){ %>
         <tr>
-          <th class="graph-item-data-name" id="<%- rc.id + ':'+ dataElement.id  %>">
-            <%- dataElement.name %>
+          <th class="graph-item-data-name" id="<%- rc.id + ':'+ property.id  %>">
+            <%- property.name %>
           </th>
           <td class="graph-item-data-value">
-            <%- dataElement.value %>
+            <%- property.value %>
           </td>
         </tr>
       <% }) %>
@@ -192,13 +184,13 @@
         <th colspan="2">D A T A</th>
       </tr>
 
-      <% _.each( rc.data, function( dataElement ){ %>
+      <% _.each( rc.data, function( property ){ %>
         <tr>
-          <th class="graph-item-data-name" id="<%- rc.id + ':'+ dataElement.id  %>">
-            <%- dataElement.name %>
+          <th class="graph-item-data-name" id="<%- rc.id + ':'+ property.id  %>">
+            <%- property.name %>
           </th>
           <td class="graph-item-data-value">
-            <%- dataElement.value %>
+            <%- property.value %>
           </td>
         </tr>
       <% }) %>

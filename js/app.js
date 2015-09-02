@@ -18,6 +18,7 @@ define("graph-it-app",["data", "Q", "storage"], function(dataService, Q, storage
             self.storageService = storageService;
             localStorage.clear();
             return storageService.loadCategories()
+              .then(storageService.loadItemTypes)
               .then(storageService.loadRelationships)
               .then(storageService.loadGraphItems)
               .then(function(){

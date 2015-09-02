@@ -22,7 +22,7 @@ define("data", ["Q"], function (Q) {
       });
       return p;
     },
-      
+
     createGraphItem:function(graphItem){
       var url = prefix + "graph-item";
       var p = Q($.ajax({
@@ -45,7 +45,7 @@ define("data", ["Q"], function (Q) {
       });
       return p;
     },
-      
+
     createGraphItemFromForm:function( formData ){
         var url = prefix + "graph-item/form";
 
@@ -65,14 +65,14 @@ define("data", ["Q"], function (Q) {
             graphItem.notes = graphItem.notes || "";
             return graphItem;
         });
-          
+
         p.fail(function (response) {
             console.log('createGraphItemFromForm failed: ', response);
         });
 
         return p;
       },
-            
+
     createItemRelationship:function(itemRelationship){
       var url = prefix + "item-relationship";
       var p = Q($.ajax({
@@ -112,7 +112,7 @@ define("data", ["Q"], function (Q) {
 
       return p;
     },
-      
+
     _fixImageLink: function _fixImageLink(images){
         var dataLocation = self._getLocation()
         return images.map(function(img){
@@ -145,7 +145,7 @@ define("data", ["Q"], function (Q) {
         return JSON.parse(graphItemJson)
       });
     },
-      
+
     getGraphItem: function(id){
         var p = Q($.get(prefix + "graph-item/"+id));
         p.fail( function(err){
@@ -153,13 +153,29 @@ define("data", ["Q"], function (Q) {
         });
         return p.then(function (data) {
          // fix the image urls
-            var images = self._fixImageLink( data.images ); 
+            var images = self._fixImageLink( data.images );
             data.notes=notes.trim();
             data.images=images;
-            return data; 
+            return data;
       });
     },
-      
+
+    getType: function(id){
+        var p = Q($.get(prefix + "types/"+id));
+        p.fail( function(err){
+            console.log("getType Error: "+err)
+        });
+        return p;
+    },
+
+    getTypeByName: function(typeName){
+        var p = Q($.get(prefix + "types/byName/"+typeName));
+        p.fail( function(err){
+            console.log("getTypeByName Error: "+err)
+        });
+        return p;
+    },
+
     getRelationshipDefs: function () {
       var deferred = Q.defer();
       var url = prefix + "relationship";
@@ -181,12 +197,33 @@ define("data", ["Q"], function (Q) {
       return p;
     },
 
+    getAllTypes: function () {
+      var deferred = Q.defer();
+      var url = prefix + "types";
+      var p = Q($.ajax({
+        type: "GET",
+        url: url,
+        dataType: 'json',
+        timeout: 12000, // 12 seconds because server is so slow
+        headers: {
+          Accept: "application/json"
+        }
+      }));
+      p.then(function (data) {
+        console.log('getAllTypes successful', data);
+      });
+      p.fail(function (response) {
+        console.log('getAllTypes failed: ', response);
+      });
+      return p;
+    },
+
     getAllGraphItems: function () {
       var p = Q($.get(prefix + "graph-item"));
       p.fail( function(err){
         console.log("getAllGraphItems Error: "+err)
       });
-        
+
         p.then(function(dataList){
             var dataLocation = self._getLocation();
             return dataList.map(function(data){
@@ -195,9 +232,9 @@ define("data", ["Q"], function (Q) {
                 data.notes= data.notes || "";
                 data.notes= data.notes.trim();
                 data.data = data.data || [];
-                return data; 
+                return data;
                 });
-        });        
+        });
       return p;
     },
 

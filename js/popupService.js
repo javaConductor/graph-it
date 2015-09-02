@@ -7,13 +7,13 @@ define("popupService", ["storage", "Q", "underscore"], function (storageService,
 
   _.templateSettings.variable = "rc";
 
-  var updateSelect = function ($select, objectArray, valueField, displayField, currentValue) {
-    objectArray.forEach(function (obj) {
-      var s = (currentValue && currentValue == obj[valueField]) ? " selected='selected' " : "";
-      $select.append($("<option " + s + " value='" + obj[valueField] + "'>" + obj[displayField] + "</option>"));
-      console.debug("Select: " + obj[valueField] + "-->>" + obj[displayField]);
-    });
-  };
+  //var updateSelect = function ($select, objectArray, valueField, displayField, currentValue) {
+  //  objectArray.forEach(function (obj) {
+  //    var s = (currentValue && currentValue == obj[valueField]) ? " selected='selected' " : "";
+  //    $select.append($("<option " + s + " value='" + obj[valueField] + "'>" + obj[displayField] + "</option>"));
+  //    console.debug("Select: " + obj[valueField] + "-->>" + obj[displayField]);
+  //  });
+  //};
   var relationshipSelectorDialog;
   var obj = {
 

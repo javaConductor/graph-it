@@ -9,14 +9,14 @@
   height: 14em;
   width: 24em;
 
-  background-image: url("/mages/metal_background_of_highdefinition_picture_3_169713.jpg");
+  background-image: url("/graph-it/images/metal_background_of_highdefinition_picture_3_169713.jpg");
   border: double;
   text-align: center;
 }
 
 .graph-item-selected {
-  border: double; 
-    
+  border: double;
+
 }
 
 .graph-item-new-note{
@@ -34,7 +34,12 @@ textarea.graph-item-notes{
   height: 100%;
   vertical-align: top;
   text-align: left;
+  background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
+}
 
+textarea.graph-item-notes:selection{
+  text-align: left;
+  color: #000000;
   background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
 }
 
@@ -82,8 +87,8 @@ textarea.graph-item-notes{
   margin-right: 5px;
   color: navy;
   font-weight: 900;
-background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");
-  
+  background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");
+
   background-color: white;
   vertical-align: middle;
   text-align: center;
@@ -110,6 +115,9 @@ background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.c
   background-color: lightsteelblue;
 }
 
+#required-item-property {
+
+}
 
 .graph-relationship {
 
@@ -118,5 +126,5 @@ background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.c
 
 /*.ui-dialog { background: #87a5be no-repeat right bottom fixed; }*/
 .ui-dialog {
-  background-image: url("/graph-it/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");
+  background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");
 }
