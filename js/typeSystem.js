@@ -9,7 +9,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
         return itemType;
     }
 
-//    storage.getAllTypes().then(handleNewType());
     var obj = {
 
         BASE_TYPE_NAME : "$thing",
@@ -72,9 +71,9 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     if(value)
                         $element.val(value);
                     if(required){
-                        $element.prop("placeHolder", "Required")
+                        $element.attr("placeHolder", "Required")
                     }else{
-                        $element.prop("placeHolder", "Optional")
+                        $element.attr("placeHolder", "Optional")
                     }
                         break;
                 case "number":
@@ -82,14 +81,37 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     if(value)
                         $element.val(value);
                     if(required){
-                        $element.prop("placeHolder", "Required")
+                        $element.attr("placeHolder", "Required")
                     }else{
-                        $element.prop("placeHolder", "Optional")
+                        $element.attr("placeHolder", "Optional")
                     }
                     break;
                 case "dateTime":
+                    $element = $("<input type='datetime' />");
+
+                    if( value )
+                        $element.val( value);
+                    if(required){
+                        $element.attr("placeHolder", "Required")
+                    }else{
+                        $element.attr("placeHolder", "Optional")
+                    }
+                    //TODO: handle constraints (min,max, etc)
+                    break;
+                case "dateTimeXXXXX":
+                    $.datepicker.setDefaults({
+                        dateFormat: 'yyyy-mm-dd',
+                        showOn: "both",
+                        buttonText: "Calendar"
+                    });
                     $element = $("<input type='text' />");
-                    $element.datetimepicker();
+                    $element.datetimepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        formatTime: 'hh:mm:ss:u',
+                        showOn: "both",
+                        buttonText: "Calendar"
+                    });
+                    //$.datetimepicker.setOptions();
                     if( value )
                         $element.datetimepicker("setDate", value);
                     if(required){
@@ -105,9 +127,9 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     if( value )
                         $element.val( value );
                     if(required){
-                        $element.prop("placeHolder", "Required")
+                        $element.attr("placeHolder", "Required")
                     }else{
-                        $element.prop("placeHolder", "Optional")
+                        $element.attr("placeHolder", "Optional")
                     }
                     break;
 
@@ -115,7 +137,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     break;
                 case "boolean":
                     $element = $("<input type='checkbox' />");
-                    $element.prop('checked', !!value);
+                    $element.attr('checked', !!value);
                     break;
                 default :
                         throw Error("Not a valid item reference: "+ itemRef);
@@ -167,11 +189,13 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             var $tdName = $("<td/>");
             var $lblName = $("<label>"+propertyName+"</label>");
             $lblName.attr("id", elementId.createItemPropertyNameId(propertyName));
+            $lblName.addClass("item-property-name");
 
             var $tdValueEditor = $("<td/>");
 
             return self.createEditor(typeName, propertyName, value, required, $tdValueEditor).then(function($editor){
                 $editor.attr("id", elementId.createItemPropertyValueId(propertyName));
+                $editor.addClass("item-property-value");
                 $tdValueEditor.append($editor);
                 $tdName.append($lblName);
                 $tr.append($tdName);

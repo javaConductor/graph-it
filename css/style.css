@@ -2,21 +2,19 @@
 .graph-button {
   background-color: navy;
   color: #ffffff;
-
 }
 
 .graph-item {
   height: 14em;
   width: 24em;
 
-  background-image: url("/graph-it/images/metal_background_of_highdefinition_picture_3_169713.jpg");
+  background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
   border: double;
   text-align: center;
 }
 
 .graph-item-selected {
   border: double;
-
 }
 
 .graph-item-new-note{
@@ -88,10 +86,21 @@ textarea.graph-item-notes:selection{
   color: navy;
   font-weight: 900;
   background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");
-
-  background-color: white;
   vertical-align: middle;
   text-align: center;
+}
+
+.graph-item-type
+{
+  vertical-align: middle;
+  text-align: center;
+  color: lightsteelblue;
+  background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");
+  text-shadow:
+  -1px -1px 0 #00f,
+  1px -1px 0 #00f,
+  -1px 1px 0 #00f,
+  1px 1px 0 #00f;
 }
 
 .graph-view {

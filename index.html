@@ -39,19 +39,20 @@
 <div id="new-item-dialog">
     <form method="post" enctype="multipart/form-data" action="/graph-item/form" id="graph-item-form">
         <input type="hidden" name="new-item-creation_date" id="new-item-creation_date" >
-
-  <table>
+        <input type="hidden" name="typeName"  class="new-item-type-name" >
+<table>
+  <thead>
     <tr>
       <th>Title</th>
       <td><input type="text" name="title" id="new-item-title" class="new-item"></td>
     </tr>
     <tr>
       <th>Type</th>
-      <td><select id="new-item-type" name="type" class="new-item"/></td>
+      <td><select id="new-item-type" name="type" class="new-item"></select></td>
     </tr>
     <tr>
       <th>Categories</th>
-      <td><select id="new-item-category" name="category" class="new-item"/></td>
+      <td><select id="new-item-category" name="category" class="new-item"></select></td>
     </tr>
     <tr>
       <th>Position</th>
@@ -65,14 +66,16 @@
       <td><input type="file"  id="new-item-image" name="image" class="new-item"/></td>
     </tr>
     <tr>
-      <th colspan="2">D A T A</th>
+      <th colspan="2" align="center">D A T A</th>
     </tr>
-
-    <tbody id="new-item-properties" >
+    </thead>
+    <tbody id="graph-item-properties" >
     </tbody>
-    <tr>
-      <td colspan="2"><input type="submit"  value="Create Item" id="new-item-submit" name="submit" class="new-item"/></td>
-    </tr>
+    <!--<tr>-->
+      <!--<td colspan="2">-->
+        <!--<input type="submit" value="Create Item" id="new-item-submit" name="submit" class="new-item" />-->
+      <!--</td>-->
+    <!--</tr>-->
   </table>
         </form>
 </div>
@@ -105,6 +108,12 @@
     <tr>
       <th colspan="3" class="graph-title"><%- rc.title %></th>
     </tr>
+    <% if ( rc.typeName && rc.typeName != "$thing" ){ %>
+    <tr>
+      <th colspan="3" class="graph-item-type"><%- rc.typeName %></th>
+    </tr>
+    <% }  %>
+
     </thead>
     <% if ( rc.images.length == 0 ){ %>
     <tr >
@@ -128,18 +137,18 @@
     </tr>
     <% } %>
 
-    <% if (rc.data && rc.data.length > 0) { %>
+    <% if (rc.data) { %>
       <tr>
-        <th colspan="2">D A T A</th>
+        <th colspan="2" align="center"  style="vertical-align: middle; text-align: center;">D A T A</th>
       </tr>
 
-      <% _.each( rc.data, function( property ){ %>
+      <% _.each( rc.data, function( value, propName  ){ %>
         <tr>
-          <th class="graph-item-data-name" id="<%- rc.id + ':'+ property.id  %>">
-            <%- property.name %>
+          <th class="graph-item-data-name" id="<%- rc.id + ':'+ propName  %>">
+            <%- propName %>
           </th>
           <td class="graph-item-data-value">
-            <%- property.value %>
+            <%- value %>
           </td>
         </tr>
       <% }) %>

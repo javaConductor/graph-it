@@ -160,7 +160,7 @@ define("storage", ["Q", "data"], function (Q, dataService) {
     loadRelationships: function loadRelationships(){
       return dataService.getRelationshipDefs().then(function(relationships){
         localStorage[relationshipKey] = JSON.stringify(relationships);
-        console.dir("Storage: Added graph-relationships:", relationships);
+        console.dir("Storage: Added graph-relationships:", localStorage[relationshipKey]);
         localStorage[relationshipUpdatedKey] = ""+(new Date().getMilliseconds());
         return relationships;
       });
@@ -259,7 +259,7 @@ define("storage", ["Q", "data"], function (Q, dataService) {
       return dataService.getAllTypes().then(function(itemTypes){
         itemTypes.forEach(function(itemType){
           localStorage[graphItemTypePrefix+itemType.id] = JSON.stringify(itemType);
-          console.dir("Storage: Added item-type:"+itemType.id, itemType);
+          //console.dir("Storage: Added item-type:"+itemType.id, itemType);
         });
         localStorage[graphItemTypeUpdateKey] = ""+(new Date().getMilliseconds());
         return itemTypes;
@@ -291,7 +291,7 @@ define("storage", ["Q", "data"], function (Q, dataService) {
         for ( var i = 0, len = localStorage.length; i < len; ++i ) {
           var key = localStorage.key( i );
           var value = localStorage.getItem(key);
-          console.log( localStorage.getItem( localStorage.key( i ) ) );
+          //console.log( localStorage.getItem( localStorage.key( i ) ) );
           if(itemTypeRegEx.test(key) ){
             // add type to list
             ret.push(  JSON.parse(value) );

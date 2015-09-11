@@ -11,7 +11,7 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
     var $toolbar = $("#graph-toolbar");
   });
 
-    var selectedTypeName;
+    var selectedTypeId;
 
   var newItemDialog
   var obj = {
@@ -50,12 +50,14 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
       $("#new-item-type").on("change", function (event) {
 
         // if the selected type changed
-        if ($("#new-item-type").val() != selectedTypeName) {
+        if ($("#new-item-type").val() != selectedTypeId) {
           /// get the current data values
-          selectedTypeName = $("#new-item-type").val();
-          /// get the current data value
-          if(selectedTypeName)
-            self.handleItemTypeChange(selectedTypeName);
+          selectedTypeId =  $("#new-item-type").val();
+          typeSystem.getTypeById(selectedTypeId).then(function(type){
+            $("#new-item-type-name").val(type.name);
+          });
+          if(selectedTypeId)
+            self.handleItemTypeChange(selectedTypeId);
         }
 
       });
@@ -96,13 +98,13 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
 
         // get the data
         var currentUIValues =
-            self.getCurrentPropertyValues($("#new-item-properties"))
+            self.getCurrentPropertyValues($("#graph-item-properties"))
 
         // remove the old rows
-        $("#new-item-properties").empty();
+        $("#graph-item-properties").empty();
 
         /// create the new rows
-        self.createPropertyRows( newType, currentUIValues, $("#new-item-properties") );
+        self.createPropertyRows( newType, currentUIValues, $("#graph-item-properties") );
         return newType;
       })
     },
@@ -134,17 +136,20 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
 
     getCurrentPropertyValues : function ($propertyTable) {
       var ret = {};
-      _.each(elementId.findItemPropertyNameElements($propertyTable), function($propName){
-        var propName = $propName.val();
-        var $value = $("#"+elementId.createItemPropertyValueId(propName));
+      _.each(elementId.findItemPropertyValueElements($propertyTable), function(valueElement){
+        var $value = $(valueElement);
+        var propName = $value.attr('id').substring(15);
         var value = $value.val();
-        ret[ propName ] = value;
+        if(value)
+          ret[ propName ] = value;
       });
       return ret;
     },
 
     createNewItemFromForm : function (newItemProperties) {
         var formData = newItemProperties.formData;
+        /// add data to formData
+      formData.append("data",  JSON.stringify( self.getCurrentPropertyValues($("#graph-item-properties"))) );
         return storageService.addGraphItemFromForm(formData).then(function (graphItem) {
           graphService.createGraphItemElements($("#graph-view"), [graphItem]);
           return graphItem;
@@ -155,7 +160,7 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
       typeSystem.getAllTypes().then(function(types){
         _.each(types, function( type ){
           var opt =  $( "<option></option>" );
-          opt.prop( "value", type.id );
+          opt.attr( "value", type.id );
           opt.html( type.name )
           $select.append( opt );
         });

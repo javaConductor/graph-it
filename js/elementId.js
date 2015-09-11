@@ -27,9 +27,8 @@ define("elementId", [], function () {
     },
 
     findItemPropertyNameElements: function findItemPropertyNameElements($parent){
-      /// find all the children of $propertyTable where the id="property:*;name"
-      return $parent.find("[id|='property-name:']").toArray();
-      //a[hreflang|='en']
+      /// find all the children of $propertyTable with the class
+      return $parent.find(".item-property-name").toArray();
     },
 
     propertyNameFromItemPropertyNameId: function propertyNameFromItemPropertyNameId(itemPropertyNameId){
@@ -41,8 +40,8 @@ define("elementId", [], function () {
     },
 
     findItemPropertyValueElements: function findItemPropertyValueElements($parent){
-      /// find all the children of $propertyTable where the id="property:*;value"
-      return $parent.find("[id|=property-value:]").toArray();
+      /// find all the children of $propertyTable with the class
+      return $parent.find(".item-property-value").toArray();
     },
 
     propertyNameFromItemPropertyValueId: function propertyNameFromItemPropertyValueId(itemPropertyValueId){
