@@ -8,7 +8,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
         typeCache[itemType.name] = itemType;
         return itemType;
     }
-
+    $.fn.editable.defaults.mode = 'inline';
     var obj = {
 
         BASE_TYPE_NAME : "$thing",
@@ -67,12 +67,21 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
 
             switch (typeName){
                 case "text":
-                    $element = $("<input type='text' />");
+                    //$element = $("<input type='text' />");
+                    $element = $("<a />");
                     if(value)
-                        $element.val(value);
+                        $element.text(value);
                     if(required){
                         $element.attr("placeHolder", "Required")
                     }
+                    $element.editable({
+                        success: function(resp, newValue){
+                            console.log(propertyName+':success', newValue );
+                        },
+                        url: function(params){
+                            console.log(propertyName+':url',  params );
+                        }
+                    });
                         break;
                 case "number":
                     $element = $("<input type='number' />");
