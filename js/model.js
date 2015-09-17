@@ -21,6 +21,7 @@ function GraphItem(config) {
   /// ItemRelationship - DO this in its own collection
   ///this.relationships = config.relationships ? config.relationships : [];
   this.notes = [];
+  this.typeName =  config.typeName || "";
   return this;
 };
 

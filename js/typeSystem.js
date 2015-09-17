@@ -72,8 +72,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                         $element.val(value);
                     if(required){
                         $element.attr("placeHolder", "Required")
-                    }else{
-                        $element.attr("placeHolder", "Optional")
                     }
                         break;
                 case "number":
@@ -82,8 +80,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                         $element.val(value);
                     if(required){
                         $element.attr("placeHolder", "Required")
-                    }else{
-                        $element.attr("placeHolder", "Optional")
                     }
                     break;
                 case "dateTime":
@@ -93,8 +89,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                         $element.val( value);
                     if(required){
                         $element.attr("placeHolder", "Required")
-                    }else{
-                        $element.attr("placeHolder", "Optional")
                     }
                     //TODO: handle constraints (min,max, etc)
                     break;
@@ -116,8 +110,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                         $element.datetimepicker("setDate", value);
                     if(required){
                         $element.prop("placeHolder", "Required")
-                    }else{
-                        $element.prop("placeHolder", "Optional")
                     }
                     //TODO: handle constraints (min,max, etc)
                     break;
@@ -128,12 +120,18 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                         $element.val( value );
                     if(required){
                         $element.attr("placeHolder", "Required")
-                    }else{
-                        $element.attr("placeHolder", "Optional")
                     }
                     break;
 
                 case "emailAddress":
+                    $element = $("<input type='email' />");
+
+                    if( value )
+                        $element.val( value);
+                    if(required){
+                        $element.attr("placeHolder", "Required")
+                    }
+                    //TODO: handle constraints (min,max, etc)
                     break;
                 case "boolean":
                     $element = $("<input type='checkbox' />");
@@ -142,6 +140,17 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                 default :
                         throw Error("Not a valid item reference: "+ itemRef);
             }
+
+            //TODO move this up to do it  for each type
+            if(false) $element.editable({
+                success: function(resp, newValue){
+                    console.log('success', newValue );
+                },
+                url: function(params){
+                    console.log('url',  params );
+                }
+            });
+
             return Q($element);
         },
 
@@ -180,7 +189,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             return $.inArray( typeName, ['number','text','dateTime','emailAddress','link', 'boolean'] ) >= 0;
         },
 
-        createPropertyTableRow: function(typeName, propertyName, value, required, $parent){
+        createPropertyTableRow: function(typeName, propertyName, value, required, $parent, labelClass, valueClass){
             var $tr = $("<tr/>");
             $tr.attr("id", elementId.createItemPropertyRowId(propertyName));
             if (required){
@@ -190,16 +199,24 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             var $lblName = $("<label>"+propertyName+"</label>");
             $lblName.attr("id", elementId.createItemPropertyNameId(propertyName));
             $lblName.addClass("item-property-name");
+           // $lblName.addClass("graph-item-data-name");
+            if(labelClass)
+                $tdName.addClass(labelClass);
 
             var $tdValueEditor = $("<td/>");
+            if(valueClass)
+                $tdValueEditor.addClass(valueClass);
 
             return self.createEditor(typeName, propertyName, value, required, $tdValueEditor).then(function($editor){
                 $editor.attr("id", elementId.createItemPropertyValueId(propertyName));
                 $editor.addClass("item-property-value");
+                if(valueClass)
+                    $editor.addClass(valueClass);
                 $tdValueEditor.append($editor);
                 $tdName.append($lblName);
                 $tr.append($tdName);
                 $tr.append($tdValueEditor);
+
                 return Q( $tr );
             });
         }//createPropertyTableRow

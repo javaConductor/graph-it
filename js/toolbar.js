@@ -57,7 +57,7 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
             $("#new-item-type-name").val(type.name);
           });
           if(selectedTypeId)
-            self.handleItemTypeChange(selectedTypeId);
+            self.handleItemTypeChange(selectedTypeId, $("#new-graph-item-properties"));
         }
 
       });
@@ -85,11 +85,11 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
       });
 
       typeSystem.resolveType(typeSystem.BASE_TYPE_NAME).then(function(baseType){
-        return self.handleItemTypeChange(baseType.id);
+        return self.handleItemTypeChange(baseType.id, $("#new-graph-item-properties"));
       })
     },
 
-    handleItemTypeChange: function(newTypeId){
+    handleItemTypeChange: function(newTypeId, $parent){
 
       /// get the current data values
 
@@ -98,63 +98,27 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
 
         // get the data
         var currentUIValues =
-            self.getCurrentPropertyValues($("#graph-item-properties"))
+            graphService.getCurrentPropertyValues($parent)
 
         // remove the old rows
-        $("#graph-item-properties").empty();
+        $parent.empty();
 
         /// create the new rows
-        self.createPropertyRows( newType, currentUIValues, $("#graph-item-properties") );
+        graphService.createPropertyRows( newType, currentUIValues, $parent,"graph-item-data-name" );
         return newType;
       })
-    },
-
-    /// setup the linkage between the itemType select value and the
-    /// data properties ( name and value )
-    createPropertyRows:function (itemType, currentUIValues, $targetTable) {
-      var rows = {};
-      var promises = [];
-      $targetTable.empty();
-      /// loop through the properties and make a row for each one
-      /// and the ones from the currentUIValues not yet represented
-      promises = _.map(itemType.propertyDefs, function(propDef, propertyName){
-        return typeSystem.createPropertyTableRow(
-                propDef.typeName,
-                propertyName,
-                currentUIValues[propertyName],
-                propDef.required,
-                $targetTable) ;
-      });
-      Q.allSettled(promises).then(function(tableRows){
-        _.each(tableRows, function(tr){
-          $targetTable.append( tr.value );
-        });
-
-      });
-      return rows;
-    },
-
-    getCurrentPropertyValues : function ($propertyTable) {
-      var ret = {};
-      _.each(elementId.findItemPropertyValueElements($propertyTable), function(valueElement){
-        var $value = $(valueElement);
-        var propName = $value.attr('id').substring(15);
-        var value = $value.val();
-        if(value)
-          ret[ propName ] = value;
-      });
-      return ret;
     },
 
     createNewItemFromForm : function (newItemProperties) {
         var formData = newItemProperties.formData;
         /// add data to formData
-      formData.append("data",  JSON.stringify( self.getCurrentPropertyValues($("#graph-item-properties"))) );
+      formData.append("data",  JSON.stringify( graphService.getCurrentPropertyValues($("#new-graph-item-properties"))) );
         return storageService.addGraphItemFromForm(formData).then(function (graphItem) {
           graphService.createGraphItemElements($("#graph-view"), [graphItem]);
           return graphItem;
         });
       },
+
     updateTypes: function($select){
       $select.empty();
       typeSystem.getAllTypes().then(function(types){
@@ -181,7 +145,7 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
           self.updateTypes($("#new-item-type"));
 
           typeSystem.resolveType(typeSystem.BASE_TYPE_NAME).then(function(baseType){
-            return self.handleItemTypeChange(baseType.id);
+            return self.handleItemTypeChange(baseType.id, $("#new-graph-item-properties"));
           });
 
           $("#new-item-creation_date").val(new Date().toUTCString());

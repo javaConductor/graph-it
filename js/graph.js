@@ -2,7 +2,9 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("graph", ["data", "storage", "relationship"], function (dataService, storage, relationshipService) {
+define("graph",
+    ["data", "storage", "relationship","typeSystem","elementId","Q"],
+    function (dataService, storage, relationshipService, typeSystem, elementId, Q) {
 
   var obj = {
     getCategories: function () {
@@ -87,6 +89,14 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
             });
         });
 
+        typeSystem.resolveType(graphItem.typeName).then(function(type){
+            self.createPropertyRows(type,
+                graphItem.data,
+                div.find("#graph-item-properties"), "graph-item-data-name","graph-item-data-value" );
+        });
+
+
+
         return div;
     },
 
@@ -97,17 +107,17 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
         var dynamicAnchors = [ [ 0.2, 0, 0, -1 ],  [ 1, 0.2, 1, 0 ],
           [ 0.8, 1, 0, 1 ], [ 0, 0.8, -1, 0 ] ];
 
-          
+
           var endpointOptions = {
-    anchor:[ "TopCenter", "BottomCenter" ], 
-      isSource:true, 
+    anchor:[ "TopCenter", "BottomCenter" ],
+      isSource:true,
       isTarget:true,
       connector : "Straight",
       connectorStyle: { lineWidth:2, strokeStyle:'navy' },
       scope:"blueline",
-      dragAllowedWhenFull:false  
-}; 
-   
+      dragAllowedWhenFull:false
+};
+
     jsPlumb.addEndpoint( div.attr("id"), { uuid: div.attr("id")}, endpointOptions );
 /*
         jsPlumb.makeSource(div,{
@@ -121,7 +131,7 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
           //anchor: ["Continuous", {faces:["top","bottom","left","right"]}],
           cssClass:"graph-relationship"
         });
-  */        
+  */
         var tabIndex = 1 + (idx * 10);
         div.attr("tabIndex", tabIndex);
         div.find(".graph-item-notes" ).attr("tabIndex", tabIndex + 1);
@@ -139,7 +149,44 @@ define("graph", ["data", "storage", "relationship"], function (dataService, stor
         });
     },
 
-    updateItemPosition: function (graphItem) {
+      /// setup the linkage between the itemType select value and the
+      /// data properties ( name and value )
+      createPropertyRows:function (itemType, currentUIValues, $targetTable, labelClass, valueClass) {
+          var rows = {};
+          var promises = [];
+          $targetTable.empty();
+          /// loop through the properties and make a row for each one
+          /// and the ones from the currentUIValues not yet represented
+          promises = _.map(itemType.propertyDefs, function(propDef, propertyName){
+              return typeSystem.createPropertyTableRow(
+                  propDef.typeName,
+                  propertyName,
+                  currentUIValues[propertyName],
+                  propDef.required,
+                  $targetTable, labelClass, valueClass);
+          });
+          Q.all(promises).then(function(tableRows){
+              _.each(tableRows, function(tr){
+                  $targetTable.append( tr );
+              });
+
+          });
+          return rows;
+      },
+
+      getCurrentPropertyValues : function ($propertyTable) {
+          var ret = {};
+          _.each(elementId.findItemPropertyValueElements($propertyTable), function(valueElement){
+              var $value = $(valueElement);
+              var propName = $value.attr('id').substring(15);
+              var value = $value.val();
+              if(value)
+                  ret[ propName ] = value;
+          });
+          return ret;
+      },
+
+      updateItemPosition: function (graphItem) {
       return dataService.updateGraphItemPosition(graphItem).then(function(graphItem){
         return storage.updateGraphItem(graphItem);
       });
