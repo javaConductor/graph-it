@@ -84,21 +84,43 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     });
                         break;
                 case "number":
-                    $element = $("<input type='number' />");
+                    //$element = $("<input type='number' />");
+                    $element = $("<a></a>");
                     if(value)
                         $element.val(value);
                     if(required){
                         $element.attr("placeHolder", "Required")
                     }
+                    $element.editable({
+                        type: "number",
+                        placeholder: required ? "Required" : "",
+                        success: function(resp, newValue){
+                            console.log(propertyName+':success', newValue );
+                        },
+                        url: function(params){
+                            console.log(propertyName+':url',  params );
+                        }
+                    });
                     break;
                 case "dateTime":
-                    $element = $("<input type='datetime' />");
+                    //$element = $("<input type='datetime' />");
+                    $element = $("<a></a>");
 
                     if( value )
-                        $element.val( value);
+                        $element.text( value);
                     if(required){
                         $element.attr("placeHolder", "Required")
                     }
+                    $element.editable({
+                        type: "date",
+                        placeholder: required ? "Required" : "",
+                        success: function(resp, newValue){
+                            console.log(propertyName+':success', newValue );
+                        },
+                        url: function(params){
+                            console.log(propertyName+':url',  params );
+                        }
+                    });
                     //TODO: handle constraints (min,max, etc)
                     break;
                 case "dateTimeXXXXX":

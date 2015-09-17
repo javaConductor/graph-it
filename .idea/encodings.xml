@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/../BibleService/src/main/groovy/org/swordexplorer/crossref/db/XRefDb.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../BibleService/src/main/groovy/org/swordexplorer/kjv/KjvService.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../VersesFromBiblia/src/test/groovy/sword/ParseSpec.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../dpWebService/src/main/java/com/shoppertrak/dp/appinfo/PerformanceMetrics.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../dpWebService/src/test/groovy/RemoveDupsSpec.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/domain/Category.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/domain/Relationship.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/service/DbAccess.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/service/GraphItService.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/service/RestService.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/typesystem/PrimitiveTypes.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/typesystem/TypeSystem.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/typesystem/domain/GroupDef.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/typesystem/domain/ItemType.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/typesystem/validation/DataElementDefValidator.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/groovy/com/graphomatic/util/DataLoader.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../graph-it-server/src/main/resources/AppConfig.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../graph-it-server/startClient.cmd" charset="UTF-8" />
   </component>
 </project>
