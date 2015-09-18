@@ -68,43 +68,48 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             switch (typeName){
                 case "text":
                     //$element = $("<input type='text' />");
-                    $element = $("<a />");
+                    $element = $("<label  />");
                     if(value)
                         $element.text(value);
-                    if(required){
-                        $element.attr("placeHolder", "Required")
-                    }
                     $element.editable({
+                        placeholder: required ? "Required" : "",
+                        emptytext: required ? "Required" : "Enter...",
+                        showbuttons:false,
+                        onblur:"submit",
+                        pk: propertyName,
                         success: function(resp, newValue){
                             console.log(propertyName+':success', newValue );
                         },
                         url: function(params){
                             console.log(propertyName+':url',  params );
+                            $element.val(params.value)
                         }
                     });
                         break;
                 case "number":
                     //$element = $("<input type='number' />");
-                    $element = $("<a></a>");
+                    $element = $("<label></label>");
                     if(value)
                         $element.val(value);
-                    if(required){
-                        $element.attr("placeHolder", "Required")
-                    }
-                    $element.editable({
+                     $element.editable({
                         type: "number",
                         placeholder: required ? "Required" : "",
+                        emptytext: required ? "Required" : "Enter...",
+                        showbuttons:false,
+                        onblur:"submit",
+                        pk: propertyName,
                         success: function(resp, newValue){
                             console.log(propertyName+':success', newValue );
                         },
                         url: function(params){
                             console.log(propertyName+':url',  params );
+                            $element.val(params.value)
                         }
                     });
                     break;
                 case "dateTime":
                     //$element = $("<input type='datetime' />");
-                    $element = $("<a></a>");
+                    $element = $("<label></label>");
 
                     if( value )
                         $element.text( value);
@@ -112,57 +117,52 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                         $element.attr("placeHolder", "Required")
                     }
                     $element.editable({
-                        type: "date",
+                        type: "dateui",
                         placeholder: required ? "Required" : "",
+                        emptytext: required ? "Required" : "Enter...",
+                        showbuttons:false,
+                        onblur:"submit",
+                        pk: propertyName,
                         success: function(resp, newValue){
                             console.log(propertyName+':success', newValue );
                         },
                         url: function(params){
                             console.log(propertyName+':url',  params );
+                            $element.val(params.value)
                         }
                     });
                     //TODO: handle constraints (min,max, etc)
                     break;
-                case "dateTimeXXXXX":
-                    $.datepicker.setDefaults({
-                        dateFormat: 'yyyy-mm-dd',
-                        showOn: "both",
-                        buttonText: "Calendar"
-                    });
-                    $element = $("<input type='text' />");
-                    $element.datetimepicker({
-                        formatDate: 'YYYY-MM-DD',
-                        formatTime: 'hh:mm:ss:u',
-                        showOn: "both",
-                        buttonText: "Calendar"
-                    });
-                    //$.datetimepicker.setOptions();
-                    if( value )
-                        $element.datetimepicker("setDate", value);
-                    if(required){
-                        $element.prop("placeHolder", "Required")
-                    }
-                    //TODO: handle constraints (min,max, etc)
-                    break;
-                case "link":
+                 case "link":
                     //$element = $("<a type='text' />");
                     $element = $("<input  type='url' />");
                     if( value )
-                        $element.val( value );
+                        $element.text( value );
                     if(required){
                         $element.attr("placeHolder", "Required")
                     }
                     break;
 
                 case "emailAddress":
-                    $element = $("<input type='email' />");
+                    $element = $("<label />");
 
                     if( value )
-                        $element.val( value);
-                    if(required){
-                        $element.attr("placeHolder", "Required")
-                    }
-                    //TODO: handle constraints (min,max, etc)
+                        $element.text( value);
+                    $element.editable({
+                        type: "email",
+                        placeholder: required ? "Required" : "",
+                        emptytext: required ? "Required" : "Enter...",
+                        showbuttons:false,
+                        onblur:"submit",
+                        pk: propertyName,
+                        success: function(resp, newValue){
+                            console.log(propertyName+':success', newValue );
+                        },
+                        url: function(params){
+                            console.log(propertyName+':url',  params );
+                            $element.val(params.value)
+                        }
+                    });
                     break;
                 case "boolean":
                     $element = $("<input type='checkbox' />");
@@ -171,17 +171,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                 default :
                         throw Error("Not a valid item reference: "+ itemRef);
             }
-
-            //TODO move this up to do it  for each type
-            if(false) $element.editable({
-                success: function(resp, newValue){
-                    console.log('success', newValue );
-                },
-                url: function(params){
-                    console.log('url',  params );
-                }
-            });
-
             return Q($element);
         },
 
