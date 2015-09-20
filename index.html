@@ -112,7 +112,7 @@
     <% }  %>
 
     </thead>
-    <% if ( rc.images.length == 0 ){ %>
+    <% if ( !rc.images || rc.images.length==0 ){ %>
     <tr >
 
     </tr>
@@ -149,7 +149,7 @@
     <tr>
       <th colspan="3" class="graph-title"><%- rc.title %></th>
     </tr>
-    <% if ( rc.images.length == 0 ){ %>
+    <% if ( !rc.images || rc.images.length==0 ){ %>
     <tr >
 
     </tr>
@@ -174,7 +174,7 @@
     </tr>
     <% } %>
 
-    <% if (rc.data.length > 0) { %>
+    <% if (rc.data > 0) { %>
       <tr>
         <th colspan="2">D A T A</th>
       </tr>

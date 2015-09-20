@@ -28,6 +28,7 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
           "Create Item": function (evt) {
             var title = $("#new-item-title").val();
             // alert("Creating item " + title);
+            evt.preventDefault();
             var formData = new FormData($('#graph-item-form')[0])
             return obj.createNewItemFromForm({
               formData: formData
@@ -104,7 +105,7 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
         $parent.empty();
 
         /// create the new rows
-        graphService.createPropertyRows( newType, currentUIValues, $parent,"graph-item-data-name" );
+        graphService.createPropertyRows(null, newType, currentUIValues, $parent,"graph-item-data-name" );
         return newType;
       })
     },
@@ -113,8 +114,9 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
         var formData = newItemProperties.formData;
         /// add data to formData
       formData.append("data",  JSON.stringify( graphService.getCurrentPropertyValues($("#new-graph-item-properties"))) );
+
         return storageService.addGraphItemFromForm(formData).then(function (graphItem) {
-          graphService.createGraphItemElements($("#graph-view"), [graphItem]);
+            graphService.createGraphItemElements($("#graph-view"), [graphItem]);
           return graphItem;
         });
       },

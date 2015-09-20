@@ -298,6 +298,27 @@ define("data", ["Q"], function (Q) {
       });
       return p;
     }
+,
+
+    updateGraphItem: function (graphItem) {
+      var url = prefix + "graph-item";
+        graphItem.links =null;
+        console.log("updating graph-item:"+ JSON.stringify(graphItem))
+      var p = Q($.ajax({
+        type: "PUT",
+        url: url,
+        data: JSON.stringify(graphItem),
+        dataType: 'json',
+        timeout: 12000, // 12 seconds because server is so slow
+        headers: {
+          Accept: "application/json"
+        }
+      }));
+      p.fail(function (response) {
+        console.log('Item Update failed: ', response);
+      });
+      return p;
+    }
   };//obj
     self = obj;
     return obj;

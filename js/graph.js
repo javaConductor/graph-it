@@ -90,7 +90,7 @@ define("graph",
         });
 
         typeSystem.resolveType(graphItem.typeName).then(function(type){
-            self.createPropertyRows(type,
+            self.createPropertyRows(graphItem.id ,type,
                 graphItem.data,
                 div.find("#graph-item-properties"), "graph-item-data-name","graph-item-data-value" );
         });
@@ -151,14 +151,14 @@ define("graph",
 
       /// setup the linkage between the itemType select value and the
       /// data properties ( name and value )
-      createPropertyRows:function (itemType, currentUIValues, $targetTable, labelClass, valueClass) {
+      createPropertyRows:function (itemId, itemType, currentUIValues, $targetTable, labelClass, valueClass) {
           var rows = {};
           var promises = [];
           $targetTable.empty();
           /// loop through the properties and make a row for each one
           /// and the ones from the currentUIValues not yet represented
           promises = _.map(itemType.propertyDefs, function(propDef, propertyName){
-              return typeSystem.createPropertyTableRow(
+              return typeSystem.createPropertyTableRow(itemId,
                   propDef.typeName,
                   propertyName,
                   currentUIValues[propertyName],
@@ -169,8 +169,9 @@ define("graph",
               _.each(tableRows, function(tr){
                   $targetTable.append( tr );
               });
-
-          });
+            }, function(err){
+                console.log("Error: "+ err );
+            });
           return rows;
       },
 
@@ -178,7 +179,7 @@ define("graph",
           var ret = {};
           _.each(elementId.findItemPropertyValueElements($propertyTable), function(valueElement){
               var $value = $(valueElement);
-              var propName = $value.attr('id').substring(15);
+              var propName = $value.data('propertyName');
               var value = $value.val();
               if(value)
                   ret[ propName ] = value;

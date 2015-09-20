@@ -52,137 +52,141 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             return storage.getTypeByName( typeName).then(handleNewType);
         },
 
-        createEditor: function(typeName, propertyName, value, required, $parent){
+        createEditor: function(itemId, typeName, propertyName, value, required, $parent){
             var isPrimitive = self.isPrimitiveType(typeName);
             return (isPrimitive
-                ? (self.createPrimitiveTypeEditor(typeName, propertyName, value, required, $parent))
+                ? (self.createPrimitiveTypeEditor(itemId, typeName, propertyName, value, required, $parent))
                 : (  self.resolveType(typeName).then(function(itemType){
-                        return self.createItemTypeEditor(itemType, propertyName, value, required, $parent);
+                        return self.createItemTypeEditor(itemId, itemType, propertyName, value, required, $parent);
                     })
                 )
             );
         },
-        createPrimitiveTypeEditor: function(typeName, propertyName, value, required, $parent){
+        createPrimitiveTypeEditor: function(itemId, typeName, propertyName, value, required, $parent){
             var $element;
-
             switch (typeName){
                 case "text":
-                    //$element = $("<input type='text' />");
                     $element = $("<label  />");
                     if(value)
                         $element.text(value);
-                    $element.editable({
-                        placeholder: required ? "Required" : "",
-                        emptytext: required ? "Required" : "Enter...",
-                        showbuttons:false,
-                        onblur:"submit",
-                        pk: propertyName,
-                        success: function(resp, newValue){
-                            console.log(propertyName+':success', newValue );
-                        },
-                        url: function(params){
-                            console.log(propertyName+':url',  params );
-                            $element.val(params.value)
-                        }
-                    });
                         break;
                 case "number":
-                    //$element = $("<input type='number' />");
                     $element = $("<label></label>");
                     if(value)
                         $element.val(value);
-                     $element.editable({
-                        type: "number",
-                        placeholder: required ? "Required" : "",
-                        emptytext: required ? "Required" : "Enter...",
-                        showbuttons:false,
-                        onblur:"submit",
-                        pk: propertyName,
-                        success: function(resp, newValue){
-                            console.log(propertyName+':success', newValue );
-                        },
-                        url: function(params){
-                            console.log(propertyName+':url',  params );
-                            $element.val(params.value)
-                        }
-                    });
                     break;
                 case "dateTime":
-                    //$element = $("<input type='datetime' />");
                     $element = $("<label></label>");
-
                     if( value )
                         $element.text( value);
                     if(required){
                         $element.attr("placeHolder", "Required")
                     }
-                    $element.editable({
-                        type: "dateui",
-                        placeholder: required ? "Required" : "",
-                        emptytext: required ? "Required" : "Enter...",
-                        showbuttons:false,
-                        onblur:"submit",
-                        pk: propertyName,
-                        success: function(resp, newValue){
-                            console.log(propertyName+':success', newValue );
-                        },
-                        url: function(params){
-                            console.log(propertyName+':url',  params );
-                            $element.val(params.value)
-                        }
-                    });
-                    //TODO: handle constraints (min,max, etc)
                     break;
                  case "link":
-                    //$element = $("<a type='text' />");
-                    $element = $("<input  type='url' />");
+                    $element = $("<label />");
                     if( value )
                         $element.text( value );
-                    if(required){
-                        $element.attr("placeHolder", "Required")
-                    }
                     break;
 
                 case "emailAddress":
                     $element = $("<label />");
-
                     if( value )
-                        $element.text( value);
-                    $element.editable({
-                        type: "email",
-                        placeholder: required ? "Required" : "",
-                        emptytext: required ? "Required" : "Enter...",
-                        showbuttons:false,
-                        onblur:"submit",
-                        pk: propertyName,
-                        success: function(resp, newValue){
-                            console.log(propertyName+':success', newValue );
-                        },
-                        url: function(params){
-                            console.log(propertyName+':url',  params );
-                            $element.val(params.value)
-                        }
-                    });
+                        $element.text( value );
                     break;
+
                 case "boolean":
                     $element = $("<input type='checkbox' />");
                     $element.attr('checked', !!value);
                     break;
+
                 default :
                         throw Error("Not a valid item reference: "+ itemRef);
             }
+            $element.attr("id", elementId.createItemPropertyValueId(itemId, propertyName));
+            $element.attr("name", propertyName);
+            $element.data("propertyName", propertyName);
+            $element.data("itemId", itemId);
+            $element.data("required", required) ;
+            //  $element.data("readOnly", false) ;
+            $element = self._makeEditable(itemId, $element, typeName, propertyName, required);
             return Q($element);
         },
 
+        _makeEditable: function(itemId, $element, typeName, propertyName, required){
+            var type
+            var isNewItem =  (!itemId || itemId == "new");
+            switch (typeName){
+                case "text":
+                    type='text';
+                    break;
+                case "number":
+                    type='number'
+                    break;
+                case "dateTime":
+                    type='dateui'
+                    break;
+                case "link":
+                    type='url'
+                    break;
+                case "emailAddress":
+                    type='email'
+                    break;
+                case "boolean":
+                    break;
+                default :
+                    throw Error("Not a valid type reference: "+ typeName);
+            }
+
+        if(type)
+            $element.editable({
+                type: type,
+                placeholder: required ? "Required" : "",
+                emptytext: required ? "Required" : "Enter...",
+                showbuttons:false,
+                onblur:"submit",
+                pk: propertyName,
+                success: function(resp, newValue){
+                    console.log(propertyName+':success', newValue );
+                },
+                url: function(params){
+                    console.log(propertyName+':url',  params );
+                    if(!isNewItem ) {
+                        self.updateItemProperty(
+                            elementId.itemIdFromItemPropertyEditorId($element.attr('id')),
+                            propertyName,
+                            params.value).then(function(updatedItem){
+                                console.log("Saved "+propertyName+ ": "+params.value+" --> "+updatedItem.data[propertyName]);
+                                $element.val(params.value);
+                            });
+                    } else{
+                        $element.val(params.value);
+                    }
+                }
+            });
+        return $element;
+        },
+        updateItemProperty:function(itemId, propertyName, propertyValue){
+            var $dirtyFlag = $('#'+elementId.createItemPropertyDirtyFlagId(itemId,propertyName));
+            $dirtyFlag.text('*');
+            return storage.getGraphItem(itemId).then(function (item) {
+                item.data[propertyName] = propertyValue;
+                return storage.updateGraphItem(item).then(function (savedItem) {
+                    $dirtyFlag.text('');
+                    return savedItem;
+                });
+            });
+
+        },
         getCompatibleItems: function (typeName) {
             return storage.getAllGraphItems().then(function(graphItems){
                 return _.filter(graphItems, function(item){
-                    self.canAssign( typeName,  item.typeName)
+                    return self.canAssign( typeName,  item.typeName);
                 });
             });
         },
 
-        createItemTypeEditor: function(typeName, propertyName, value, required, $parent){
+        createItemTypeEditor: function(itemId, typeName, propertyName, value, required, $parent){
             /// get the type of the referenceType(String ref)
             return self.getItemByReference(value).then(function(graphItem){
                 // get the items of that type and put them into the OPTIONS of the select.
@@ -209,15 +213,17 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             return $.inArray( typeName, ['number','text','dateTime','emailAddress','link', 'boolean'] ) >= 0;
         },
 
-        createPropertyTableRow: function(typeName, propertyName, value, required, $parent, labelClass, valueClass){
+        createPropertyTableRow: function(itemId, typeName, propertyName, value, required, $parent, labelClass, valueClass){
             var $tr = $("<tr/>");
-            $tr.attr("id", elementId.createItemPropertyRowId(propertyName));
+            $tr.attr("id", elementId.createItemPropertyRowId(itemId, propertyName));
             if (required){
                 $tr.addClass("required-item-property");
             }
             var $tdName = $("<td/>");
+            var $lblDirty = $("<label></label>");
+            $lblDirty.attr("id", elementId.createItemPropertyDirtyFlagId( itemId, propertyName));
             var $lblName = $("<label>"+propertyName+"</label>");
-            $lblName.attr("id", elementId.createItemPropertyNameId(propertyName));
+            $lblName.attr("id", elementId.createItemPropertyNameId( itemId, propertyName));
             $lblName.addClass("item-property-name");
            // $lblName.addClass("graph-item-data-name");
             if(labelClass)
@@ -227,18 +233,24 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             if(valueClass)
                 $tdValueEditor.addClass(valueClass);
 
-            return self.createEditor(typeName, propertyName, value, required, $tdValueEditor).then(function($editor){
-                $editor.attr("id", elementId.createItemPropertyValueId(propertyName));
-                $editor.addClass("item-property-value");
-                if(valueClass)
-                    $editor.addClass(valueClass);
-                $tdValueEditor.append($editor);
-                $tdName.append($lblName);
-                $tr.append($tdName);
-                $tr.append($tdValueEditor);
-
-                return Q( $tr );
-            });
+            return self.createEditor(itemId,
+                typeName,
+                propertyName,
+                value,
+                required,
+                $tdValueEditor).then(function($editor){
+                    $editor.addClass("item-property-value");
+                    if(valueClass)
+                        $editor.addClass(valueClass);
+//                    $editor.data("readOnly", false) ;
+//                    $editor.data("propertyName", propertyName);
+                    $tdValueEditor.append($editor);
+                    $tdName.append($lblName);
+                    $tdName.append($lblDirty);
+                    $tr.append($tdName);
+                    $tr.append($tdValueEditor);
+                    return Q( $tr );
+                });
         }//createPropertyTableRow
     }
     self = obj;
