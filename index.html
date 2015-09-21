@@ -126,7 +126,7 @@
         <table>
           <tr><th valign="top" align="center" class="graph-item-notes-header">Notes</th></tr>
           <tr><td>
-            <textarea rows="7" class="graph-item-notes" id="<%- 'graph-item-notes:'+ rc.id %>" ><%- rc.notes  %></textarea>
+            <textarea rows="7" class="graph-item-notes" id="<%- 'graph-item-notes:'+ rc.id %>" ><%- rc.notes  ? rc.notes : "" %></textarea>
           </td></tr>
 
         </table>
