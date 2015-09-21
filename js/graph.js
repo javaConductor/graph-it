@@ -162,7 +162,7 @@ define("graph",
                   propDef.typeName,
                   propertyName,
                   currentUIValues[propertyName],
-                  propDef.required,
+                  propDef.required, propDef.readOnly,
                   $targetTable, labelClass, valueClass);
           });
           Q.all(promises).then(function(tableRows){
@@ -180,7 +180,7 @@ define("graph",
           _.each(elementId.findItemPropertyValueElements($propertyTable), function(valueElement){
               var $value = $(valueElement);
               var propName = $value.data('propertyName');
-              var value = $value.val();
+              var value = $value.val() || $value.text();
               if(value)
                   ret[ propName ] = value;
           });

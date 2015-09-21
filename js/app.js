@@ -2,7 +2,7 @@
  * Created by lcollins on 7/14/2015.
  */
 
-define("graph-it-app",["data", "Q", "storage"], function(dataService, Q, storageService){
+define("graph-it-app",["data", "Q", "storage","toolbar"], function(dataService, Q, storageService, toolbar){
 
   var obj = {
 
@@ -11,9 +11,9 @@ define("graph-it-app",["data", "Q", "storage"], function(dataService, Q, storage
       jsPlumb.ready(function () {
         jsPlumb.Defaults.Connector = [ "Bezier", { curviness:140 } ];
         $(function () {
-          require(["graph","toolbar","relationship"], function (graph, toolbar, relationshipService ) {
+          require(["graph","relationship"], function (graph,  relationshipService ) {
             self.graphService = graph;
-            self.toolbar = toolbar;
+            //self.toolbar = toolbar;
             self.relationshipService = relationshipService;
             self.storageService = storageService;
             localStorage.clear();
@@ -28,7 +28,7 @@ define("graph-it-app",["data", "Q", "storage"], function(dataService, Q, storage
                   return null;
                 }
               })
-              .then(function(){
+              .then(function(initFnResult){
                 return graph.initGraphItemElements($parent).then(function ($elements) {
                   console.log("Started...", $elements);
                   //alert("App initialized!!!");

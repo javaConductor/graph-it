@@ -2,7 +2,7 @@
  * Created by lcollins on 8/27/2015.
  */
 define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elementId) {
-    var self
+    var self;
     var typeCache = {}
     function handleNewType(itemType){
         typeCache[itemType.name] = itemType;
@@ -52,17 +52,17 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             return storage.getTypeByName( typeName).then(handleNewType);
         },
 
-        createEditor: function(itemId, typeName, propertyName, value, required, $parent){
+        createEditor: function(itemId, typeName, propertyName, value, required, readOnly, $parent){
             var isPrimitive = self.isPrimitiveType(typeName);
             return (isPrimitive
-                ? (self.createPrimitiveTypeEditor(itemId, typeName, propertyName, value, required, $parent))
+                ? (self.createPrimitiveTypeEditor(itemId, typeName, propertyName, value, required, readOnly, $parent))
                 : (  self.resolveType(typeName).then(function(itemType){
-                        return self.createItemTypeEditor(itemId, itemType, propertyName, value, required, $parent);
+                        return self.createItemTypeEditor(itemId, itemType, propertyName, value, required, readOnly, $parent);
                     })
                 )
             );
         },
-        createPrimitiveTypeEditor: function(itemId, typeName, propertyName, value, required, $parent){
+        createPrimitiveTypeEditor: function(itemId, typeName, propertyName, value, required, readOnly, $parent){
             var $element;
             switch (typeName){
                 case "text":
@@ -79,9 +79,6 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     $element = $("<label></label>");
                     if( value )
                         $element.text( value);
-                    if(required){
-                        $element.attr("placeHolder", "Required")
-                    }
                     break;
                  case "link":
                     $element = $("<label />");
@@ -109,7 +106,8 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             $element.data("itemId", itemId);
             $element.data("required", required) ;
             //  $element.data("readOnly", false) ;
-            $element = self._makeEditable(itemId, $element, typeName, propertyName, required);
+            if(!readOnly)
+                $element = self._makeEditable(itemId, $element, typeName, propertyName, required);
             return Q($element);
         },
 
@@ -186,7 +184,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             });
         },
 
-        createItemTypeEditor: function(itemId, typeName, propertyName, value, required, $parent){
+        createItemTypeEditor: function(itemId, typeName, propertyName, value, required, readOnly, $parent){
             /// get the type of the referenceType(String ref)
             return self.getItemByReference(value).then(function(graphItem){
                 // get the items of that type and put them into the OPTIONS of the select.
@@ -213,7 +211,11 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             return $.inArray( typeName, ['number','text','dateTime','emailAddress','link', 'boolean'] ) >= 0;
         },
 
-        createPropertyTableRow: function(itemId, typeName, propertyName, value, required, $parent, labelClass, valueClass){
+        getDefaultsForType : function(type){
+            return $.extend({}, {"createDateTime" : $.datepicker.formatDate("yy-mm-dd", new Date()) }, type.defaults || {});
+        },
+
+        createPropertyTableRow: function(itemId, typeName, propertyName, value, required, readOnly, $parent, labelClass, valueClass){
             var $tr = $("<tr/>");
             $tr.attr("id", elementId.createItemPropertyRowId(itemId, propertyName));
             if (required){
@@ -237,13 +239,11 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                 typeName,
                 propertyName,
                 value,
-                required,
+                required, readOnly,
                 $tdValueEditor).then(function($editor){
                     $editor.addClass("item-property-value");
                     if(valueClass)
                         $editor.addClass(valueClass);
-//                    $editor.data("readOnly", false) ;
-//                    $editor.data("propertyName", propertyName);
                     $tdValueEditor.append($editor);
                     $tdName.append($lblName);
                     $tdName.append($lblDirty);
@@ -252,7 +252,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                     return Q( $tr );
                 });
         }//createPropertyTableRow
-    }
+    };
     self = obj;
     return obj;
 

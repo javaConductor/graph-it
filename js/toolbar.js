@@ -92,20 +92,23 @@ define("toolbar", ["Q","graph", "relationship", "storage", "data","typeSystem", 
 
     handleItemTypeChange: function(newTypeId, $parent){
 
-      /// get the current data values
-
       // get type
       return typeSystem.getTypeById(newTypeId).then(function(newType){
+
+        // get the defaults from type
+        var defaultValues = typeSystem.getDefaultsForType(newType);
+
 
         // get the data
         var currentUIValues =
             graphService.getCurrentPropertyValues($parent)
 
+        var currentValues = $.extend({}, defaultValues, currentUIValues);
         // remove the old rows
         $parent.empty();
 
         /// create the new rows
-        graphService.createPropertyRows(null, newType, currentUIValues, $parent,"graph-item-data-name" );
+        graphService.createPropertyRows(null, newType, currentValues, $parent,"graph-item-data-name" );
         return newType;
       })
     },
