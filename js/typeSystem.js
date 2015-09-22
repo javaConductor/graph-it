@@ -73,13 +73,14 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                 case "number":
                     $element = $("<label></label>");
                     if(value)
-                        $element.val(value);
+                        $element.text(value);
                     break;
                 case "dateTime":
                     $element = $("<label></label>");
                     if( value )
                         $element.text( value);
                     break;
+
                  case "link":
                     $element = $("<label />");
                     if( value )
@@ -155,6 +156,8 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
                             propertyName,
                             params.value).then(function(updatedItem){
                                 console.log("Saved "+propertyName+ ": "+params.value+" --> "+updatedItem.data[propertyName]);
+                                if (type == "number")
+                                    $element.text(params.value);
                                 $element.val(params.value);
                             });
                     } else{

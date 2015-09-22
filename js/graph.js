@@ -95,8 +95,6 @@ define("graph",
                 div.find("#graph-item-properties"), "graph-item-data-name","graph-item-data-value" );
         });
 
-
-
         return div;
     },
 
