@@ -140,8 +140,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
         if(type)
             $element.editable({
                 type: type,
-                placeholder: required ? "Required" : "",
-                emptytext: required ? "Required" : "Enter...",
+                placeholder: required ? "Required" : "Enter...",
                 showbuttons:false,
                 onblur:"submit",
                 pk: propertyName,

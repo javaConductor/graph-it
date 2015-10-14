@@ -7,6 +7,8 @@
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
   <link rel="stylesheet" type="text/css" href="js/libs/jqueryui-editable/css/jqueryui-editable.css">
+  <link rel="stylesheet" type="text/css" href="js/libs/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+  <link rel="stylesheet" type="text/css" href="js/libs/zTree_v3/css/awesomeStyle/awesome.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <link rel="stylesheet" type="text/css"
         href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
@@ -23,6 +25,7 @@
   <script src="js/libs/jquery-mask-plugin/1.13.4/jquery.mask.min.js"></script>
   <script src="js/libs/jsRender/1.0pre35/jsrender.min.js"></script>
   <script src="js/libs/jqueryui-editable/js/jqueryui-editable.js"></script>
+  <script src="js/libs/zTree_v3/js/jquery.ztree.all-3.5.min.js"></script>
 
   <script src="js/libs/jsPlumb/1.7.5/jquery.jsPlumb-1.7.5-min.js "></script>
   <script src="js/libs/requirejs/require.js"></script>
@@ -38,7 +41,7 @@
 
 <body>
 
-<div id="new-item-dialog">
+<div id="new-item-dialog" class="new-graph-item">
     <form method="post" enctype="multipart/form-data" action="/graph-item/form" id="graph-item-form">
         <input type="hidden" name="new-item-creation_date" id="new-item-creation_date" >
         <input type="hidden" name="typeName"  class="new-item-type-name" >
@@ -54,7 +57,13 @@
     </tr>
     <tr>
       <th>Categories</th>
-      <td><select id="new-item-category" name="category" class="new-item"></select></td>
+      <!--<td><select id="new-item-category" name="category" class="new-item"></select><label class="new-category-button">+</label></td>-->
+    <td>
+      <div class="new-item category-selector">
+        <label class="new-category-button">+</label>
+      <ul id="new-item-category" class="new-item ztree"></ul>
+      </div>
+    </td>
     </tr>
     <tr>
       <th>Position</th>
@@ -68,7 +77,7 @@
       <td><input type="file"  id="new-item-image" name="image" class="new-item"/></td>
     </tr>
     <tr>
-      <th colspan="2" align="center">D A T A</th>
+      <th colspan="2" style="vertical-align: middle; text-align: center;">D A T A</th>
     </tr>
     </thead>
     <tbody id="new-graph-item-properties" >
@@ -96,18 +105,17 @@
   </table>
 </div>
 </script>
-
 <script type="text/template" class="graph-item" id="graph-item-template">
 <div  class="graph-item" id="<%- 'graph-item:'+ rc.id %>">
   <table border="1" class="graph-table">
   <thead>
      <% if ( rc.typeName && rc.typeName != "$thing" ){ %>
     <tr>
-      <th colspan="3" class="graph-item-type"><%- rc.typeName + (rc.title ? (" : "+rc.title) : "" ) %></th>
+      <th colspan="3" class="graph-title graph-item-type"><%- rc.typeName + (rc.title ? (" : "+rc.title) : "" ) %></th>
     </tr>
     <% } else if (rc.title) { %>
     <tr>
-      <th colspan="3" class="graph-item-type"><%- rc.title %></th>
+      <th colspan="3" class="graph-title"><%- rc.title %></th>
     </tr>
     <% }  %>
 
@@ -143,58 +151,41 @@
   </table>
 </div>
 </script>
-<script type="text/template" class="graph-item" id="graph-item-images-template">
-<div  class="graph-item" id="<%- 'graph-item-images:'+ rc.id %>">
-  <table border="1" class="graph-table">
+
+<script type="text/template" class="category-selector" id="category-selector-template" >
+  <table>
+    <thead>
+    <tr><td colspan="2" style="background-color: lightsteelblue;float: left">Select Category</td></tr>
+    </thead>
+    <tbody class="category-tree">
     <tr>
-      <th colspan="3" class="graph-title"><%- rc.title %></th>
-    </tr>
-    <% if ( !rc.images || rc.images.length==0 ){ %>
-    <tr >
-
-    </tr>
-
-    <% } else { %>
-    <tr >
-      <td>
-        <img src="<%- '/graph-it' + rc.images[0] %>" class="graph-image"/>
+      <td class="category-tree">
+        <ul class="ztree category-tree"></ul>
       </td>
-      <td>
-        <table>
-          <tr><th valign="top" align="center" class="graph-item-notes-header">Notes</th></tr>
-          <tr><td>
-            <textarea rows="4" class="graph-item-notes" id="<%- 'graph-item-notes:'+ rc.id %>" ><%- rc.notes  %></textarea>
-          </td></tr>
-          <tr><td>
-            <input type="text" class="graph-item-notes" id="<%- 'graph-item-note:'+ rc.id %>" />
-            <button class="graph-item-new-note">Add Note</button>
-          </td></tr>
-        </table>
-        </td>
     </tr>
-    <% } %>
-
-    <% if (rc.data > 0) { %>
-      <tr>
-        <th colspan="2">D A T A</th>
-      </tr>
-
-      <% _.each( rc.data, function( property ){ %>
-        <tr>
-          <th class="graph-item-data-name" id="<%- rc.id + ':'+ property.id  %>">
-            <%- property.name %>
-          </th>
-          <td class="graph-item-data-value">
-            <%- property.value %>
-          </td>
-        </tr>
-      <% }) %>
-    <% } %>
-
+     </tbody>
   </table>
-</div>
 </script>
+<script type="text/template" class="category-editor" id="category-editor-template" >
+  <table>
+    <thead>
+    <tr><td colspan="2">Category</td></tr>
+    </thead>
+    <tbody class="category-tree">
+    <tr>
+      <td>Name</td>
+      <td><input id="category-name" type="text"> </td>
+    </tr>
+    <tr>
+      <td>Parent</td>
+      <td class="category-tree">
+        <ul class="ztree category-tree"></ul>
+      </td>
+    </tr>
+     </tbody>
+  </table>
 
+</script>
 <h1>
   Graph O Matic
 </h1>

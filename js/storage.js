@@ -24,6 +24,11 @@ define("storage", ["Q", "data"], function (Q, dataService) {
     ///////////////////////////////////////////////////////////////////
     loadCategories: function loadCategories(){
       return dataService.getCategories().then(function(categories){
+
+        var baseCategory = _.find(categories, function(category){
+          return category.name = "ALL";
+        });
+        self.baseCategory = baseCategory;
         localStorage[categoryKey] = JSON.stringify(categories);
         console.dir("Storage: Added categories:", categories);
         localStorage[categoryUpdateKey] = ""+(new Date().getMilliseconds() + categoryTimeToLiveMS);
@@ -31,6 +36,7 @@ define("storage", ["Q", "data"], function (Q, dataService) {
       })
     },
 
+    baseCategory: {},
     addCategory: function addCategory(category){
       return dataService.createCategory(category).then(function(updatedCategory){
         return self.getCategories().then(function(categories){

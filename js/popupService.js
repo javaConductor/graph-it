@@ -5,65 +5,115 @@
 define("popupService", ["storage", "Q", "underscore"], function (storageService, Q, _) {
 
 
-  _.templateSettings.variable = "rc";
+        _.templateSettings.variable = "rc";
 
-  //var updateSelect = function ($select, objectArray, valueField, displayField, currentValue) {
-  //  objectArray.forEach(function (obj) {
-  //    var s = (currentValue && currentValue == obj[valueField]) ? " selected='selected' " : "";
-  //    $select.append($("<option " + s + " value='" + obj[valueField] + "'>" + obj[displayField] + "</option>"));
-  //    console.debug("Select: " + obj[valueField] + "-->>" + obj[displayField]);
-  //  });
-  //};
-  var relationshipSelectorDialog;
-  var obj = {
+        var relationshipTemplateSelector = "#relationship-selector-dialog-template";
+        var categoryTemplateSelector = "#category-editor-template";
+        var relationshipSelectorDialog;
+        var categoryDialog;
+        var obj = {
 
-    selectRelationship: function selectRelationship(currentSelectionValue) {
-      var deferred = Q.defer();
+            editCategory: function editCategory(categoryToEdit) {
+                var deferred = Q.defer();
+                var template = _.template(
+                    $(categoryTemplateSelector).html()
+                );
 
-      // if Relationship Dialog doesn't exist then create it
-      //if (!relationshipSelectorDialog) {
-        storageService.getAllRelationships().then(function (relationships) {
+                $("body").append(template({
+                    category: categoryToEdit
+                }));
+                var saveOrCreate = categoryToEdit ? "Create" : "Save";
 
-          var template = _.template(
-            $("#relationship-selector-dialog-template").html()
-          );
+                var buttons = {};
 
-          $("body").append(template({
-            relationships: relationships
-          }));
+                buttons[saveOrCreate] = function saveCategory(evt) {
+                    /// user saved a category
+                    // get name and parent
+                    var name = $(categoryTemplateSelector).find(".category-name").val();
+                    var parent = $(categoryTemplateSelector).find(".parent-name").val();
+                    // get id if any
+                    var catId = $(categoryTemplateSelector).find(".category-id").val();
 
-          relationshipSelectorDialog = $("#relationship-selector-dialog").dialog({
-            autoOpen: false,
-            height: 300,
-            width: 350,
-            modal: true,
-            title: "Select Relationship",
-            buttons: {
-              "Select": function (evt) {
-                /// user chose a relationship
-                var relationshipId = $('#relationship-selector-relationship').val();
-                storageService.getRelationship(relationshipId).then(function (relationship) {
-                  alert("Relationship: " + relationship.name + " was chosen.");
-                  deferred.resolve(relationship)
-                  $("#relationship-selector-dialog").dialog("close");
+                    var category = {
+                        name : name
+                    }
+                    var relationshipId = $(categoryTemplateSelector).val();
+                    storageService.getRelationship(relationshipId).then(function (relationship) {
+                        alert("Relationship: " + relationship.name + " was chosen.");
+                        deferred.resolve(relationship)
+                        $("#relationship-selector-dialog").dialog("close");
+                    });
+                };
+
+                buttons["Cancel"] = function () {
+                    categoryDialog.dialog("close");
+                    categoryDialog.hide();
+                    alert("No category was chosen.");
+                    deferred.reject("Dialog Cancelled.")
+                };
+
+                categoryDialog = $(categoryTemplateSelector).dialog({
+                    autoOpen: false,
+                    height: 300,
+                    width: 350,
+                    modal: true,
+                    title: categoryToEdit ? "Edit Category" : "New Category",
+                    buttons: buttons
                 });
-              }
+
+                if (currentSelectionValue)
+                    $(categoryTemplateSelector).val(currentSelectionValue);
+                categoryDialog.dialog("open");
+                return deferred.promise;
             },
-            Cancel: function () {
-              relationshipSelectorDialog.dialog("close");
-              relationshipSelectorDialog.hide();
-              alert("No relationship was chosen.");
-              deferred.reject("Dialog Cancelled.")
+
+            selectRelationship: function selectRelationship(currentSelectionValue) {
+                var deferred = Q.defer();
+
+                // if Relationship Dialog doesn't exist then create it
+                //if (!relationshipSelectorDialog) {
+                storageService.getAllRelationships().then(function (relationships) {
+
+                    var template = _.template(
+                        $(relationshipTemplateSelector).html()
+                    );
+
+                    $("body").append(template({
+                        relationships: relationships
+                    }));
+
+                    relationshipSelectorDialog = $(relationshipTemplateSelector).dialog({
+                        autoOpen: false,
+                        height: 300,
+                        width: 350,
+                        modal: true,
+                        title: "Select Relationship",
+                        buttons: {
+                            "Select": function (evt) {
+                                /// user chose a relationship
+                                var relationshipId = $('#relationship-selector-relationship').val();
+                                storageService.getRelationship(relationshipId).then(function (relationship) {
+                                    alert("Relationship: " + relationship.name + " was chosen.");
+                                    deferred.resolve(relationship)
+                                    $(relationshipTemplateSelector).dialog("close");
+                                });
+                            }
+                        },
+                        Cancel: function () {
+                            relationshipSelectorDialog.dialog("close");
+                            relationshipSelectorDialog.hide();
+                            alert("No relationship was chosen.");
+                            deferred.reject("Dialog Cancelled.")
+                        }
+                    });
+
+                    if (currentSelectionValue)
+                        $("#relationship-selector-relationship").val(currentSelectionValue);
+                    relationshipSelectorDialog.dialog("open");
+                });
+
+                return deferred.promise;
             }
-          });
-
-          if ( currentSelectionValue )
-            $("#relationship-selector-relationship").val(currentSelectionValue);
-          relationshipSelectorDialog.dialog("open");
-        });
-
-      return deferred.promise;
-    }
-  };
-  return obj;
+        };
+return obj;
 });

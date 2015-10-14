@@ -3,7 +3,6 @@
  */
 
 
-
 function GraphItem(config) {
 
   config = config ? config : {};
@@ -45,6 +44,15 @@ function ItemRelationship() {
   this.relatedItemId = "";
   this.relationshipId = "";
   this.notes = [];
+  return this;
+};
+
+function Category(  ) {
+  this.name = "";
+  this.id = "";
+  this.description = "";
+  this.parent = {};
+  this.children = [];
   return this;
 };
 
