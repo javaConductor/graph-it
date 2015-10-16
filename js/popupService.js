@@ -73,40 +73,41 @@ define("popupService", ["storage", "Q", "underscore"], function (storageService,
                 // if Relationship Dialog doesn't exist then create it
                 //if (!relationshipSelectorDialog) {
                 storageService.getAllRelationships().then(function (relationships) {
+                    if(!relationshipSelectorDialog) {
+                        var template = _.template(
+                            $(relationshipTemplateSelector).html()
+                        );
+                        relationshipSelectorDialog = relationshipSelectorDialog || $(template({
+                                relationships: relationships
+                            }));
 
-                    var template = _.template(
-                        $(relationshipTemplateSelector).html()
-                    );
+                        $("body").append(relationshipSelectorDialog);
 
-                    $("body").append(template({
-                        relationships: relationships
-                    }));
-
-                    relationshipSelectorDialog = $(relationshipTemplateSelector).dialog({
-                        autoOpen: false,
-                        height: 300,
-                        width: 350,
-                        modal: true,
-                        title: "Select Relationship",
-                        buttons: {
-                            "Select": function (evt) {
-                                /// user chose a relationship
-                                var relationshipId = $('#relationship-selector-relationship').val();
-                                storageService.getRelationship(relationshipId).then(function (relationship) {
-                                    alert("Relationship: " + relationship.name + " was chosen.");
-                                    deferred.resolve(relationship)
-                                    $(relationshipTemplateSelector).dialog("close");
-                                });
+                        relationshipSelectorDialog.dialog({
+                            autoOpen: false,
+                            height: 300,
+                            width: 350,
+                            modal: true,
+                            title: "Select Relationship",
+                            buttons: {
+                                "Select": function (evt) {
+                                    /// user chose a relationship
+                                    var relationshipId = $('#relationship-selector-relationship').val();
+                                    storageService.getRelationship(relationshipId).then(function (relationship) {
+                                        alert("Relationship: " + relationship.name + " was chosen.");
+                                        deferred.resolve(relationship)
+                                        relationshipSelectorDialog.dialog("close");
+                                    });
+                                }
+                            },
+                            Cancel: function () {
+                                relationshipSelectorDialog.dialog("close");
+                                relationshipSelectorDialog.hide();
+                                alert("No relationship was chosen.");
+                                deferred.reject("Dialog Cancelled.")
                             }
-                        },
-                        Cancel: function () {
-                            relationshipSelectorDialog.dialog("close");
-                            relationshipSelectorDialog.hide();
-                            alert("No relationship was chosen.");
-                            deferred.reject("Dialog Cancelled.")
-                        }
-                    });
-
+                        });
+                    }
                     if (currentSelectionValue)
                         $("#relationship-selector-relationship").val(currentSelectionValue);
                     relationshipSelectorDialog.dialog("open");

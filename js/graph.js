@@ -156,6 +156,16 @@ define("graph",
         div.find(".graph-item-notes" ).attr("tabIndex", tabIndex + 1);
         return div;
       });
+        var maxX=parent.width(),maxY=parent.height();
+
+        divs.forEach(function (div) {
+            maxX = Math.max( div.width() + div.position().left, maxX);
+            maxY = Math.max( div.height() + div.position().top, maxY);
+        });
+        parent.css({
+            height : (maxY+30)+"px",
+            width: (maxX+30)+"px"
+        });
       return divs;
     },
 

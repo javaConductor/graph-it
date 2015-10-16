@@ -150,7 +150,6 @@ Selection
 */
 .selection-on.graph-item {
     z-index: 10;
-
     border-style: ridge;
 }
 
@@ -178,7 +177,6 @@ Selection
     background-image: url("/images/blackandgray.jpg");
     background-repeat: repeat;
     /*background: -webkit-repeating-radial-gradient(ellipse farthest-corner, red, black 5%, blue 5%, green 10%);*/
-
 }
 
 .simple-relationship-label {
