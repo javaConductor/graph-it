@@ -9,12 +9,12 @@ define("graph-it-app",["data", "Q", "storage","toolbar"], function(dataService, 
     initialize: function($parent, initFn){
 
       jsPlumb.ready(function () {
-        jsPlumb.Defaults.Connector = [ "Bezier", { curviness:140 } ];
         $(function () {
           require(["graph","relationship"], function (graph,  relationshipService ) {
             self.graphService = graph;
             //self.toolbar = toolbar;
             self.relationshipService = relationshipService;
+            relationshipService.jsPlumb.Defaults.Connector = [ "Bezier", { curviness:140 } ];
             self.storageService = storageService;
             localStorage.clear();
             return storageService.loadCategories()
@@ -32,12 +32,12 @@ define("graph-it-app",["data", "Q", "storage","toolbar"], function(dataService, 
                 return graph.initGraphItemElements($parent).then(function ($elements) {
                   console.log("Started...", $elements);
                   //alert("App initialized!!!");
-                  jsPlumb.repaintEverything();
+                  relationshipService.jsPlumb.repaintEverything();
                 });
 
               });
 
-            }
+            }//require
           )
         });
       });
