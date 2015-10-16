@@ -3,8 +3,8 @@
  */
 
 define("graph",
-    ["data", "storage", "relationship","typeSystem","elementId","Q"],
-    function (dataService, storage, relationshipService, typeSystem, elementId, Q) {
+    ["data", "storage", "relationship","typeSystem","elementId","Q","selection"],
+    function (dataService, storage, relationshipService, typeSystem, elementId, Q, selection) {
 
   var obj = {
     getCategories: function () {
@@ -30,7 +30,20 @@ define("graph",
       return storage.addGraphItem(graphItem)
     },
 
-    createGraphItemElement: function (graphItem) {
+      resizeParentByItemPosition: function ($graphView, positionX, positionY, height, width ) {
+          var totalWidth = 30 + Math.max(positionX + width, $graphView.width());
+          var totalHeight = 30 + Math.max(positionY + height, $graphView.height());
+
+          $graphView.css({
+              height: totalHeight+"px",
+              width: totalWidth+"px"
+          });
+
+          //console.log("resizing", $graphView, totalWidth, totalHeight);
+          return {x: totalWidth, y: totalHeight };
+      },
+
+      createGraphItemElement: function (graphItem) {
       // use the template to create the graphItem Element
       var template = _.template(
         $("#graph-item-template").html()
@@ -43,7 +56,7 @@ define("graph",
           snap: true,
           scroll: true,
           drag: function(){
-            jsPlumb.repaint($(this));
+            relationshipService.jsPlumb.repaint($(this));
           },
 
           start: function () {
@@ -59,8 +72,11 @@ define("graph",
             graphItem.position.y = Math.max(pos.top, 0);
             div.animate({top: graphItem.position.y}, function () {
               div.animate({left: graphItem.position.x}, function () {
-                jsPlumb.repaintEverything();
+                relationshipService.jsPlumb.repaintEverything();
                 self.updateItemPosition(graphItem).then( function (newGraphItem) {
+                    /// resize the parent
+                    self.resizeParentByItemPosition($("#graph-view"), graphItem.position.x, graphItem.position.y, div.height(), div.width());
+
                   console.log("Graph Item updated ", newGraphItem.position);
                 })
               });
@@ -87,6 +103,11 @@ define("graph",
                     });
                 }
             });
+        });
+
+        div.addClass("selection-off");
+        div.click(function(e){
+            selection.selectItem($("#graph-view"), div);
         });
 
         typeSystem.resolveType(graphItem.typeName).then(function(type){
@@ -116,7 +137,7 @@ define("graph",
       dragAllowedWhenFull:false
 };
 
-    jsPlumb.addEndpoint( div.attr("id"), { uuid: div.attr("id")}, endpointOptions );
+    relationshipService.jsPlumb.addEndpoint( div.attr("id"), { uuid: div.attr("id")}, endpointOptions );
 /*
         jsPlumb.makeSource(div,{
           //endPoint: [ "Dot", { radius:50 } ],

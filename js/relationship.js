@@ -2,13 +2,16 @@
  * Created by lcollins on 6/24/2015.
  */
 
-define("relationship", ["data", "storage","Q", "popupService"], function (dataService, storage, Q, popupService) {
+define("relationship", ["data", "storage","Q", "popupService","underscore"], function (dataService, storage, Q, popupService, _) {
   var RelationshipParameter = "relationshipId";
   var self = null;
-  var relationshipDefinitions;
   var batchDrawing = false;
-  var viewId = "graph-view"
-  jsPlumb.bind("connection",function( info, evt ){
+  var viewId = "graph-view";
+    var _jsPlumb = jsPlumb.getInstance();
+
+    // create our own jsPlumb instance
+
+  _jsPlumb.bind("connection",function( info, evt ){
 
     /// if it has a relationshipId then its not new - don't do anything
     if(info.connection.getParameter(RelationshipParameter))
@@ -26,14 +29,14 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
 
         return storage.addItemRelationship(r).then(function(itemRelationship){
           console.dir (" Created ItemRelationship: "+ itemRelationship )
-          jsPlumb.detach(info.connection);
+          _jsPlumb.detach(info.connection);
           self.view.drawRelationships([itemRelationship]);
           return itemRelationship;
           });
       })
   });
 
-  jsPlumb.bind("connectionDetach",function( info, evt ){
+  _jsPlumb.bind("connectionDetach",function( info, evt ){
 
     if(info.connection.getParameter(RelationshipParameter))
       return;
@@ -42,7 +45,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
     var ok = confirm("Are you sure you want to delete this relationship?");
     if( ok ){
       storage.removeItemRelationship(relId).then(function(removed){
-        jsPlumb.detach(info.connection);
+        _jsPlumb.detach(info.connection);
       });
     }
   });
@@ -55,7 +58,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
   };
 
   var obj = {
-
+      jsPlumb: _jsPlumb,
     getRelationshipDefs: function () {
         return storage.getAllRelationships().then(function (relDefs) {
           return (relDefs);
@@ -83,7 +86,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
       connectionForRelationship: function(relationshipId){
         return storage.getRelationship(relationshipId).then(function(relationship) {
           var conn;
-          jsPlumb.getConnections({
+          _jsPlumb.getConnections({
             source: self.graphItemIdToElementId(relationship.sourceItemId),
             target: self.graphItemIdToElementId(relationship.relatedItemId)
           }).each(function (connection) {
@@ -96,11 +99,11 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
           },
       removeItemRelationship: function(relationshipId) {
           self.view.connectionForRelationship(relationshipId).then(function(connection){
-            jsPlumb.detach(connection);
+            _jsPlumb.detach(connection);
           });
       },
       refreshRelationships: function(){
-        jsPlumb.detachEveryConnection();
+        _jsPlumb.detachEveryConnection();
         return storage.getAllItemRelationships().then(function(itemRelationships){
             return self.view.drawRelationships(itemRelationships);
           });
@@ -114,13 +117,13 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
       },
 
       drawRelationship: function (itemRelationship) {
-        storage.getAllRelationships().then(function (relDefs) {
+        return storage.getAllRelationships().then(function (relDefs) {
           var relationshipDefs = toMap(relDefs, "id");
           var dynamicAnchors = [ [ 0.2, 0, 0, -1 ],  [ 1, 0.2, 1, 0 ],
             [ 0.8, 1, 0, 1 ], [ 0, 0.8, -1, 0 ] ];
 
           //TODO do something different heree based on relationshipType
-          return jsPlumb.connect({
+          var connection =  _jsPlumb.connect({
             source: self.view.graphItemIdToElementId(itemRelationship.sourceItemId),
             target: self.view.graphItemIdToElementId(itemRelationship.relatedItemId),
             connector: [ "Bezier", { curviness:140 } ],
@@ -132,6 +135,8 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
             endPoint: [ "Dot", { radius:75 } ],
             cssClass:"graph-relationship",
             parameters: {
+              sourceId: itemRelationship.sourceItemId,
+              targetId: itemRelationship.relatedItemId,
               relationshipId: itemRelationship.id
             },
             overlays: [
@@ -151,7 +156,7 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
               ],
               ["Label", {
                 label: relationshipDefs[itemRelationship.relationship.id].name,
-                cssClass: "simple-relationship-label",
+                cssClass: "graph-relationship simple-relationship-label  selection-off",
                 id: "graph-relationship-label:" + itemRelationship.id,
                 hoverPaintStyle:{
                   strokeStyle:"cyan",
@@ -161,23 +166,52 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
               ]
             ]
           });
+          connection.addClass("selection-off")
+          return connection;
         });
       },
       drawRelationships: function (itemRelationships) {
-        ////TODO disable jsPlumb events
+        ////TODO disable _jsPlumb events
         batchDrawing = true;
-        jsPlumb.batch(function(){
-          return itemRelationships.map(function (itemRelationship) {
-            self.view.drawRelationship(itemRelationship);
-          });
+
+        var promises = itemRelationships.map(function (itemRelationship) {
+          return self.view.drawRelationship(itemRelationship);
         });
-        batchDrawing = false;
-        ////TODO re-enable jsPlumb events
+
+        return Q.all(promises, function (connections) {
+            return connections;
+        });
+
+        //////TODO re-enable _jsPlumb events
+      },
+
+      findRelationshipsForItem: function( $graphItem ){
+        var graphItemId = $graphItem.attr( "id" );
+
+          var conns1 = _jsPlumb.select({
+              source : graphItemId
+          });
+          var conns2 = _jsPlumb.select({
+              target : graphItemId
+          });
+
+          var connections = [];
+          conns1.each(function (connection) {
+                connections.push(connection);
+          });
+          conns2.each(function (connection) {
+                connections.push(connection);
+          });
+        return connections;
+      },
+
+      allRelationships: function () {
+        return self.view.__jsPlumbConnections;
       },
 
       findRelatedItem: function (relatedItemId, forced) {
         var deferred = Q.defer();
-        var relatedItem = self.findGraphItem(relatedItemId);
+        var relatedItem = self.view.findGraphItem(relatedItemId);
         if (relatedItem)
           deferred.resolve(relatedItem);
         if (forced) {
@@ -193,8 +227,6 @@ define("relationship", ["data", "storage","Q", "popupService"], function (dataSe
         return deferred.promise;
       }
     }
-
-
   };
   self = obj;
   return obj;

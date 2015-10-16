@@ -1,170 +1,193 @@
 
 .graph-button {
-  background-color: navy;
-  color: #ffffff;
+    background-color: navy;
+    color: #ffffff;
 }
 
 .ztree {
-  background-color: lightsteelblue;
-  color: #ffffff;
+    background-color: lightsteelblue;
+    color: #ffffff;
 }
 
 .level0 {
-  background-color: lightsteelblue;
-  color: #ffffff;
+    background-color: lightsteelblue;
+    color: #ffffff;
 }
 
 .level1 {
-  background-color: lightsteelblue;
-  color: #ffffff;
+    background-color: lightsteelblue;
+    color: #ffffff;
 }
 
 .level2 {
-  background-color: lightsteelblue;
-  color: #ffffff;
+    background-color: lightsteelblue;
+    color: #ffffff;
 }
 
 .graph-item {
-  height: 16em;
-  width: 34em;
+    /*height: 16em;*/
+    /*width: 34em;*/
 
-  /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
-  background-image: url("/images/imageA.jpg");
-  border: double;
-  text-align: center;
+    /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
+    background-image: url("/images/imageA.jpg");
+    border: double;
+    text-align: center;
 }
 
 .new-graph-item {
-  width: 630px;
-  height: 570px;
+    width: 630px;
+    height: 570px;
 }
+
 .graph-item-selected {
-  border: double;
+    border: double;
 }
 
-.graph-item-new-note{
-  background-color: navy;
-  color: #ffffff;
+.graph-item-new-note {
+    background-color: navy;
+    color: #ffffff;
 }
 
-.graph-item-notes{
-  background-color: navy;
-  color: #ffffff;
+.graph-item-notes {
+    background-color: navy;
+    color: #ffffff;
 }
 
-textarea.graph-item-notes{
-  width: 100%;
-  height: 100%;
-  vertical-align: top;
-  text-align: left;
-  background-image: inherit;
-  /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
+textarea.graph-item-notes {
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+    text-align: left;
+    background-image: inherit;
+    /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
 }
 
-textarea.graph-item-notes:selection{
-  text-align: left;
-  color: #000000;
-  background-image: url("/images/cool-blue-background.jpg");
+textarea.graph-item-notes:selection {
+    text-align: left;
+    color: #000000;
+    background-image: url("/images/cool-blue-background.jpg");
 
-  /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
+    /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
 }
 
-.graph-item-notes-header{
-  vertical-align: middle;
-  text-align: center;
+.graph-item-notes-header {
+    vertical-align: middle;
+    text-align: center;
 }
 
-.graph-item-data-name{
-  width: 30%;
-  color: white;
+.graph-item-data-name {
+    width: 30%;
+    color: white;
 }
+
 #graph-item-properties {
 
 }
 
+.graph-item-data-value {
+    width: 70%;
+    color: black;
+    font-weight: 800;
 
-.graph-item-data-value{
-  width: 70%;
-  color: black;
-  font-weight: 800;
-
-  /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
+    /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
 }
 
 .graph-table {
-  width: 100%;
-  border-left: ridge;
-  border-right: ridge;
-  border-collapse: collapse;
-  border-color: lightsteelblue;
-  /*background-color: navy;*/
-  background-image: inherit;
+    width: 100%;
+    border-left: ridge;
+    border-right: ridge;
+    border-collapse: collapse;
+    border-color: lightsteelblue;
+    /*background-color: navy;*/
+    background-image: inherit;
 
-  /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
-  color: #ffffff;
+    /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
+    color: #ffffff;
 }
 
 .graph-toolbar {
-  border: double;
-  border-collapse: collapse;
+    border: double;
+    border-collapse: collapse;
 }
 
 .graph-image {
-  height: 7.0em;
-  width: 8em;
-  background-color: navy;
-  /*border: ridge;*/
-  margin-left: auto;
-  margin-right: auto;
-  border-collapse: inherit;
+    height: 7.0em;
+    width: 8em;
+    background-color: navy;
+    /*border: ridge;*/
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: inherit;
 }
 
 .graph-title {
-  height: 100%;
-  width: 100%;
-  margin-left: 5px;
-  margin-right: 5px;
-  color: navy;
-  font-weight: 900;
-  font-variant: small-caps;
-  /*background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");*/
-  vertical-align: middle;
-  text-align: center;
+    height: 100%;
+    width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+    color: navy;
+    font-weight: 900;
+    font-variant: small-caps;
+    /*background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");*/
+    vertical-align: middle;
+    text-align: center;
 }
 
-.graph-item-type
-{
-  vertical-align: middle;
-  text-align: center;
-  border-color: navy;
-  color: lightsteelblue;
-  /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
-  text-shadow:
-  -1px -1px 0 #00f,
-  1px -1px 0 #00f,
-  -1px 1px 0 #00f,
-  1px 1px 0 #00f;
+.graph-item-type {
+    vertical-align: middle;
+    text-align: center;
+    border-color: navy;
+    color: lightsteelblue;
+    /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
+    text-shadow: -1px -1px 0 #00f,
+    1px -1px 0 #00f,
+    -1px 1px 0 #00f,
+    1px 1px 0 #00f;
+}
+
+/*
+Selection
+*/
+.selection-on.graph-item {
+    z-index: 10;
+
+    border-style: ridge;
+}
+
+.selection-on.graph-relationship {
+    z-index: 9;
+}
+
+.selection-off.graph-item {
+    z-index: 5;
+    border-style: groove;
+}
+
+.selection-off.graph-relationship {
+    z-index: 4;
 }
 
 .graph-view {
-  height: 90em;
-  width: 100%;
-  border-style: ridge;
-  position: relative;
-  /*background-color: lightsteelblue;*/
-  /*background: linear-gradient(180deg, lightsteelblue, lightsteelblue);*/
-  background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);
-  /*background: -webkit-repeating-radial-gradient(ellipse farthest-corner, red, black 5%, blue 5%, green 10%);*/
+    height: 90em;
+    width: 100%;
+    border-style: ridge;
+    position: relative;
+    /*background-color: lightsteelblue;*/
+    /*background: linear-gradient(180deg, lightsteelblue, lightsteelblue);*/
+    /*background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);*/
+    background-image: url("/images/blackandgray.jpg");
+    background-repeat: repeat;
+    /*background: -webkit-repeating-radial-gradient(ellipse farthest-corner, red, black 5%, blue 5%, green 10%);*/
 
 }
 
 .simple-relationship-label {
-  color: navy;
-  background-color: white;
+    color: navy;
+    background-color: white;
 }
 
 #new-item-dialog {
-  background-color: lightsteelblue;
+    background-color: lightsteelblue;
 }
 
 #required-item-property {
@@ -173,12 +196,12 @@ textarea.graph-item-notes:selection{
 
 .graph-relationship {
 
-  /*background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);*/
+    /*background: repeating-radial-gradient(ellipse farthest-corner, lightsteelblue, black 5%, blue 5%, navy 10%);*/
 }
 
 /*.ui-dialog { background: #87a5be no-repeat right bottom fixed; }*/
 .ui-dialog {
-  background-image: url("/images/silver-metal-background.jpg");
+    background-image: url("/images/silver-metal-background.jpg");
 
-  /*background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");*/
+    /*background-image: url("/images/metal textures 1920x1200 wallpaper_wallpaperswa.com_73.jpg");*/
 }
