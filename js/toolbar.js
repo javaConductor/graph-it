@@ -170,6 +170,7 @@ define("toolbar", ["Q", "graph", "relationship", "storage", "data", "typeSystem"
                     $categoryTree.data("id", category.id);
                 });
             },
+
             openNewItemDialog: function () {
 
                 self._updateDialogCategories($("#new-item-category"), storageService.baseCategory).then(function (cats) {
