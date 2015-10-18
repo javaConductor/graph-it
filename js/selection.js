@@ -11,7 +11,7 @@ define("selection", ["Q", "relationship"], function (Q,relationship) {
         $graphView.find("div.selection-on").switchClass("selection-on","selection-off");
         if($graphItem)
             $graphItem.switchClass("selection-off","selection-on");
-
+        self.moveToTop($graphView, $graphItem);
         $graphView.find(".graph-relationship.selection-on").switchClass("selection-on","selection-off");
         var conns =relationship.view.findRelationshipsForItem($graphItem);
 
@@ -20,7 +20,10 @@ define("selection", ["Q", "relationship"], function (Q,relationship) {
             connection.removeClass("selection-off");
         });
 
-    }
+    },
+      moveToTop: function($parent, $graphItem){
+        $graphItem.appendTo($parent);
+      }
 
 
   };//obj

@@ -77,7 +77,7 @@ define("popupService", ["storage", "Q", "underscore"], function (storageService,
                         var template = _.template(
                             $(relationshipTemplateSelector).html()
                         );
-                        relationshipSelectorDialog = relationshipSelectorDialog || $(template({
+                        relationshipSelectorDialog = $(template({
                                 relationships: relationships
                             }));
 

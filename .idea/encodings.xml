@@ -3,6 +3,9 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/../BibleService/src/main/groovy/org/swordexplorer/crossref/db/XRefDb.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../BibleService/src/main/groovy/org/swordexplorer/kjv/KjvService.groovy" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../MusicDB/.gitignore" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../MusicDB/build.gradle" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../MusicDB/src/main/groovy/com/soulsys/DiscogsQueueProcessor.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../VersesFromBiblia/src/test/groovy/sword/ParseSpec.groovy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../dpWebService/src/main/java/com/shoppertrak/dp/appinfo/PerformanceMetrics.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../dpWebService/src/test/groovy/RemoveDupsSpec.groovy" charset="UTF-8" />
