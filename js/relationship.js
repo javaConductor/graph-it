@@ -166,7 +166,7 @@ define("relationship", ["data", "storage","Q", "popupService","underscore"], fun
               ]
             ]
           });
-          connection.addClass("selection-off")
+          connection.addClass("selection-off");
           return connection;
         });
       },
@@ -185,28 +185,15 @@ define("relationship", ["data", "storage","Q", "popupService","underscore"], fun
         //////TODO re-enable _jsPlumb events
       },
 
-      findRelationshipsForItem: function( $graphItem ){
-        var graphItemId = $graphItem.attr( "id" );
-
-          var conns1 = _jsPlumb.select({
-              source : graphItemId
-          });
-          var conns2 = _jsPlumb.select({
-              target : graphItemId
+      allRelationships: function () {
+          var conns = _jsPlumb.select({
           });
 
           var connections = [];
-          conns1.each(function (connection) {
-                connections.push(connection);
+          conns.each(function (connection) {
+              connections.push(connection);
           });
-          conns2.each(function (connection) {
-                connections.push(connection);
-          });
-        return connections;
-      },
-
-      allRelationships: function () {
-        return self.view.__jsPlumbConnections;
+          return connections;
       },
 
       findRelatedItem: function (relatedItemId, forced) {
