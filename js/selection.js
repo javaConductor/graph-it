@@ -2,32 +2,49 @@
  * Created by lcollins on 6/29/2015.
  */
 
-define("selection", ["Q", "relationship","elementId"], function (Q,relationship,elementId) {
+define("selection", ["Q", "relationship"], function (Q,relationship) {
 
   var self;
   var obj =  {
 
     selectItem: function selectItem($graphView, $graphItem){
+        if($graphView.find("div.selection-on").index($graphItem) > -1 )
+            return;
         $graphView.find("div.selection-on").switchClass("selection-on","selection-off");
         if($graphItem)
             $graphItem.switchClass("selection-off","selection-on");
         self._moveToTop($graphView, $graphItem);
-        //$graphView.find(".graph-relationship.selection-on").switchClass("selection-on","selection-off");
         var conns =relationship.view.allRelationships();
-        conns.forEach(function (connection) {
+        conns.forEach(function (connection){
+
+            var currentRelationshipId = connection.getParameter("relationshipId");
+            //var labelOverlay = connection.getOverlays()["graph-relationship-label:"+currentRelationshipId];
+            var labelOverlay = connection.getOverlays()["graph-relationship-label:"+currentRelationshipId];
             if (connection.sourceId ==  $graphItem.attr("id") || connection.targetId ==  $graphItem.attr("id") ) {
+                connection.setPaintStyle({"lineWidth":7, "strokeStyle": 'white' });
 
-                connection.getOverlays()["graph-relationship-label:"+connection.getParameter("relationshipId")].addClass("selection-on")
-                connection.getOverlays()["graph-relationship-label:"+connection.getParameter("relationshipId")].removeClass("selection-off")
+                labelOverlay.addClass("selection-on")
+                labelOverlay.removeClass("selection-off")
 
-                connection.addClass("selection-on");
-                connection.removeClass("selection-off");
+                connection.updateClasses(["selection-on"],["selection-off"]);
+
+                //connection.endpoints[0].addClass("selection-on")
+                //connection.endpoints[1].addClass("selection-on")
+                //connection.endpoints[0].removeClass("selection-off")
+                //connection.endpoints[1].removeClass("selection-off")
+                //
             }else{
-                connection.getOverlays()["graph-relationship-label:"+connection.getParameter("relationshipId")].addClass("selection-off")
-                connection.getOverlays()["graph-relationship-label:"+connection.getParameter("relationshipId")].removeClass("selection-on")
+                connection.setPaintStyle({"lineWidth":4, "strokeStyle": 'gray'});
 
-                connection.addClass("selection-off");
-                connection.removeClass("selection-on");
+                labelOverlay.addClass("selection-off")
+                labelOverlay.removeClass("selection-on")
+
+                connection.updateClasses(["selection-off"],["selection-on"]);
+
+                //connection.endpoints[0].addClass("selection-off")
+                //connection.endpoints[1].addClass("selection-off")
+                //connection.endpoints[0].removeClass("selection-on")
+                //connection.endpoints[1].removeClass("selection-on")
             }
         });
     },

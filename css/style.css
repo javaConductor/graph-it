@@ -62,7 +62,7 @@ textarea.graph-item-notes {
     /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
 }
 
-textarea.graph-item-notes:selection {
+textarea.graph-item-notes.selection-on {
     text-align: left;
     color: #000000;
     background-image: url("/images/cool-blue-background.jpg");
@@ -150,11 +150,13 @@ Selection
 */
 .selection-on.graph-item {
     z-index: 10;
+    border-width: thick;
     border-style: ridge;
 }
 
 .selection-on.graph-relationship {
-    z-index: 9;
+    z-index: 11;
+    font-size: large;
 }
 
 .selection-off.graph-item {

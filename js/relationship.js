@@ -132,7 +132,10 @@ define("relationship", ["data", "storage","Q", "popupService","underscore"], fun
             hoverPaintStyle:{ strokeStyle:"cyan" },
             endpointHoverStyle:{ fillStyle:"red" },
 
-            endPoint: [ "Dot", { radius:75 } ],
+            endPoint: [ "Dot", {
+                radius:75,
+                cssClass: "graph-relationship selection-off"}
+            ],
             cssClass:"graph-relationship",
             parameters: {
               sourceId: itemRelationship.sourceItemId,

@@ -48,7 +48,6 @@ define("graph",
       var template = _.template(
         $("#graph-item-template").html()
       );
-//      $("body").append(template(graphItem));
       var div = $(template(graphItem));
       div.draggable({
           cursor: "move",
@@ -127,8 +126,9 @@ define("graph",
           [ 0.8, 1, 0, 1 ], [ 0, 0.8, -1, 0 ] ];
 
 
+
           var endpointOptions = {
-    anchor:[ "TopCenter", "BottomCenter" ],
+    anchor:[ "AutoDefault" ],
       isSource:true,
       isTarget:true,
       connector : "Straight",
@@ -136,6 +136,16 @@ define("graph",
       scope:"blueline",
       dragAllowedWhenFull:false
 };
+
+          relationshipService.jsPlumb.registerConnectionTypes({
+                  "normal": {
+                      paintStyle: {
+                          strokeStyle: "yellow",
+                          lineWidth: 5,
+                          cssClass: "foo"
+                      }
+                  }
+              });
 
     relationshipService.jsPlumb.addEndpoint( div.attr("id"), { uuid: div.attr("id")}, endpointOptions );
 /*
