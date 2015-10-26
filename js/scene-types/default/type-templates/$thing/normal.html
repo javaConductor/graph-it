@@ -1,0 +1,47 @@
+<script type="text/template" class="graph-item" id="graph-item-template">
+    <div  class="graph-item" id="<%- 'graph-item:'+ rc.id %>">
+        <table border="1" class="graph-table">
+            <thead>
+            <% if ( rc.typeName && rc.typeName != "$thing" ){ %>
+            <tr>
+                <th colspan="3" class="graph-title graph-item-type"><%- rc.typeName + (rc.title ? (" : "+rc.title) : "" ) %></th>
+            </tr>
+            <% } else if (rc.title) { %>
+            <tr>
+                <th colspan="3" class="graph-title"><%- rc.title %></th>
+            </tr>
+            <% }  %>
+
+            </thead>
+            <% if ( !rc.images || rc.images.length==0 ){ %>
+            <tr >
+
+            </tr>
+
+            <% } else { %>
+            <tr >
+                <td>
+                    <img src="<%- rc.images[0].imagePath %>" class="graph-image"/>
+                </td>
+                <td>
+                    <table>
+                        <tr><th valign="top" align="center" class="graph-item-notes-header">Notes</th></tr>
+                        <tr><td>
+                            <textarea rows="7" class="graph-item-notes" id="<%- 'graph-item-notes:'+ rc.id %>" ><%- rc.notes  ? rc.notes : "" %></textarea>
+                        </td></tr>
+
+                    </table>
+                </td>
+            </tr>
+            <% } %>
+
+            <tr>
+                <th colspan="2" align="center"  style="vertical-align: middle; text-align: center;">D A T A</th>
+            </tr>
+            <tbody id="graph-item-properties" >
+            </tbody>
+
+        </table>
+    </div>
+</script>
+

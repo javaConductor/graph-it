@@ -13,10 +13,14 @@ define("storage", ["Q", "data"], function (Q, dataService) {
   var categoryUpdateKey = "categories-updated";
   var graphItemKeyPrefix = "graph-item:";
   var graphItemUpdateKey = "graph-item-updated";
+  var sceneItemKeyPrefix = "scene-item:";
+  var sceneItemUpdateKey = "scene-item-updated";
   var itemRelationshipKeyPrefix = "graph-item-relationships:"
   var itemRelationshipUpdateKey = "graph-item-relationships-updated"
   var graphItemTypePrefix = "graph-item-type:"
   var graphItemTypeUpdateKey = "graph-item-type-updated"
+  var sceneItemTypePrefix = "scene-item-type:"
+  var sceneItemTypeUpdateKey = "scene-item-type-updated"
   var obj =  {
 
     ///////////////////////////////////////////////////////////////////
@@ -79,6 +83,91 @@ define("storage", ["Q", "data"], function (Q, dataService) {
       return false;
     },
 
+    ///////////////////////////////////////////////////////////////////
+    /// Scene Item Stuff
+    ///////////////////////////////////////////////////////////////////
+    loadSceneItems: function loadSceneItems(){
+      return dataService.getAllSceneItems().then(function(sceneItems){
+        sceneItems.forEach(function(sceneItem){
+          self.getGraphItem(sceneItem.itemId).then(function(graphItem){
+            sceneItem.item = graphItem;
+            localStorage[sceneItemKeyPrefix+sceneItem.id] = JSON.stringify( sceneItem );
+            console.dir("Storage: Added graph-item:"+sceneItem.id, sceneItem);
+            return sceneItem;
+          });
+        });
+        localStorage[graphItemUpdateKey] = ""+(new Date().getMilliseconds() + graphItemTimeToLiveMS);
+        return sceneItems;
+      });
+    },
+
+    addSceneItem: function addSceneItem(sceneItem){
+      return dataService.createSceneItem(sceneItem).then(function(updatedItem){
+        localStorage[sceneItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
+        return updatedItem;
+      })
+    },
+
+    //addGraphItemFromForm: function addGraphItemFromForm(formData){
+    //    var p = dataService.createGraphItemFromForm(formData);
+    //    p.then(function(updatedItem){
+    //        localStorage[graphItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
+    //        return updatedItem;
+    //    });
+    //    return p
+    //},
+
+    updateSceneItem: function updateSceneItem(sceneItem){
+      return dataService.updateSceneItem(sceneItem).then(function(updatedItem){
+        localStorage[sceneItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
+        return updatedItem;
+      })
+    },
+
+    //updateGraphItemNotes: function updateGraphItemNotes(graphItemId, notes){
+    //  return dataService.updateGraphItemNotes(graphItemId, notes).then(function(updatedItem){
+    //    localStorage[graphItemKeyPrefix+updatedItem.id] = JSON.stringify( updatedItem);
+    //    return updatedItem;
+    //  })
+    //},
+
+
+    getAllSceneItems: function getAllSceneItems(){
+      if ( !localStorage["scene-item-updated"] ){
+        return self.loadSceneItems().then(function(items){
+          return items;
+        });
+      }else{
+        var deferred = Q.defer();
+        var items = [];
+        for( var i = 0; i != localStorage.length; ++i ){
+          if (localStorage.key(i).startsWith(sceneItemKeyPrefix)){
+            var key = localStorage.key(i);
+            items.push(  JSON.parse(localStorage[key]) );
+          }
+        }
+        deferred.resolve(items);
+        return deferred.promise;
+      }
+    },
+
+    getSceneItem: function getSceneItem(id){
+      if ( !localStorage[sceneItemKeyPrefix+id] ){
+        return dataService.getSceneItem().then(function(item){
+          localStorage[sceneItemKeyPrefix+ id] = JSON.stringify(item);
+          return item;
+        });
+      }else{
+        var deferred = Q.defer();
+        var items = [];
+        deferred.resolve(JSON.parse(localStorage[sceneItemKeyPrefix+ id]));
+        return deferred.promise;
+      }
+    },
+
+    sceneItemsExpired: function sceneItemsExpired(){
+      return false;
+    },
     ///////////////////////////////////////////////////////////////////
     /// Graph Item Stuff
     ///////////////////////////////////////////////////////////////////

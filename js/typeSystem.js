@@ -223,7 +223,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             if (required){
                 $tr.addClass("required-item-property");
             }
-            var $tdName = $("<td/>");
+            var $tdName = $("<td style='text-align: right;padding: 5px;' />");
             var $lblDirty = $("<label></label>");
             $lblDirty.attr("id", elementId.createItemPropertyDirtyFlagId( itemId, propertyName));
             var $lblName = $("<label>"+propertyName+"</label>");
@@ -233,7 +233,7 @@ define("typeSystem", ["storage", "Q", "elementId"], function (storage, Q, elemen
             if(labelClass)
                 $tdName.addClass(labelClass);
 
-            var $tdValueEditor = $("<td/>");
+            var $tdValueEditor = $("<td style='text-align: left;padding: 5px;' />");
             if(valueClass)
                 $tdValueEditor.addClass(valueClass);
 

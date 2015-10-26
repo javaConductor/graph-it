@@ -7,6 +7,10 @@ define("selection", ["Q", "relationship"], function (Q,relationship) {
   var self;
   var obj =  {
 
+      viewElement : function () {
+
+      },
+
     selectItem: function selectItem($graphView, $graphItem){
         if($graphView.find("div.selection-on").index($graphItem) > -1 )
             return;

@@ -2,12 +2,26 @@
  * Created by lcollins on 6/29/2015.
  */
 
-define("selection", ["Q", "relationship"], function (Q,relationship) {
+define("viewItem", ["Q", "relationship"], function (Q,relationship) {
 
   var self;
-  var obj =  {
 
-    selectItem: function selectItem($graphView, $graphItem){
+      var ExampleApplication = React.createClass({
+          render: function() {
+              var elapsed = Math.round(this.props.elapsed  / 100);
+              var seconds = elapsed / 10 + (elapsed % 10 ? '' : '.0' );
+              var message =
+                  'React has been successfully running for ' + seconds + ' seconds.';
+              return React.DOM.p(null, message);
+          }
+      });
+
+    // Call React.createFactory instead of directly call ExampleApplication({...}) in React.render
+    var ExampleApplicationFactory = React.createFactory(ExampleApplication);
+
+    var obj =  {
+
+        selectItem: function selectItem($graphView, $graphItem){
         if($graphView.find("div.selection-on").index($graphItem) > -1 )
             return;
         $graphView.find("div.selection-on").switchClass("selection-on","selection-off");
@@ -32,11 +46,6 @@ define("selection", ["Q", "relationship"], function (Q,relationship) {
 
                 connection.updateClasses(["selection-on"],["selection-off"]);
 
-                //connection.endpoints[0].addClass("selection-on")
-                //connection.endpoints[1].addClass("selection-on")
-                //connection.endpoints[0].removeClass("selection-off")
-                //connection.endpoints[1].removeClass("selection-off")
-                //
             }else{
 
                 if(connection.hasClass("selection-off")){
