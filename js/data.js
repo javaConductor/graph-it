@@ -207,14 +207,22 @@ define("data", ["Q"], function (Q) {
                 console.log('Update failed: ', response);
             });
             return p;   
-        }
-        ,
+        },
 
         updateGraphItem: function (graphItem) {
             var url = prefix + "graph-item";
             graphItem.links = null;
             console.log("updating graph-item:" + JSON.stringify(graphItem))
             var p = performPutRequest(url, JSON.stringify(graphItem))
+            p.fail(function (response) {
+                console.log('Item Update failed: ', response);
+            });
+            return p;
+        },
+        deleteGraphItem: function (graphItem) {
+            var url = prefix + "graph-item/"+graphItem.id;
+            console.log("deleting graph-item:" + JSON.stringify(graphItem))
+            var p = performDeleteRequest(url )
             p.fail(function (response) {
                 console.log('Item Update failed: ', response);
             });
