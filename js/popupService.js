@@ -12,6 +12,9 @@ define("popupService", ["storage", "Q", "underscore"], function (storageService,
         var relationshipSelectorDialog;
         var categoryDialog;
         var obj = {
+            promptForItemName : function (suggestion) {
+                return window.prompt("Item name:", suggestion || "");
+            },
 
             editCategory: function editCategory(categoryToEdit) {
                 var deferred = Q.defer();

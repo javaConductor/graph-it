@@ -106,12 +106,17 @@
 </div>
 </script>
 <script type="text/template" class="graph-item" id="graph-item-template">
+
 <div  class="graph-item" id="<%- 'graph-item:'+ rc.id %>">
+  <span><button  class="graph-item-copy">[copy]</button>
+  <button  id="graph-item-hide">[hide]</button></span>
+  <button  id="graph-item-delete">[delete]</button></span>
   <table border="1" class="graph-table">
   <thead>
      <% if ( rc.typeName && rc.typeName != "$thing" ){ %>
     <tr>
       <th colspan="3" class="graph-title graph-item-type"><%- rc.typeName + (rc.title ? (" : "+rc.title) : "" ) %></th>
+      <th colspan="1">X</th>
     </tr>
     <% } else if (rc.title) { %>
     <tr>

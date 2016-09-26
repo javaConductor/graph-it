@@ -86,9 +86,10 @@ textarea.graph-item-notes.selection-on {
 
 .graph-item-data-value {
     width: 70%;
-    color: black;
+    color:#985f0d;
+    text-outline-color: white;
     font-weight: 800;
-
+    outline-color: white;
     /*background-image: url("/images/metal_background_of_highdefinition_picture_3_169713.jpg");*/
 }
 
