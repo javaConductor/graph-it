@@ -119,7 +119,7 @@ define("data", ["Q"], function (Q) {
         getType: function (id) {
             var p = Q($.get(prefix + "types/" + id));
             p.fail(function (err) {
-                    console.log("getType Error: " + err)
+                console.log("getType Error: " + err)
             });
             return p;
         },
@@ -206,7 +206,7 @@ define("data", ["Q"], function (Q) {
             p.fail(function (response) {
                 console.log('Update failed: ', response);
             });
-            return p;   
+            return p;
         },
 
         updateGraphItem: function (graphItem) {
@@ -219,28 +219,44 @@ define("data", ["Q"], function (Q) {
             });
             return p;
         },
-        deleteGraphItem: function (graphItem) {
-            var url = prefix + "graph-item/"+graphItem.id;
-            console.log("deleting graph-item:" + JSON.stringify(graphItem))
-            var p = performDeleteRequest(url )
+        deleteGraphItem: function (id) {
+            var url = prefix + "graph-item/" + id;
+            console.log("deleting graph-item id:" + id)
+            var p = performDeleteRequest(url)
             p.fail(function (response) {
-                console.log('Item Update failed: ', response);
+                console.log('Item delete failed: ', response);
             });
             return p;
         },
-        setBasicAuthCreds:function (u, p) {
+        setBasicAuthCreds: function (u, p) {
             var uAndP = btoa(u + ":" + p);
             basicAuth = uAndP;
         },
-        setBearerToken:function ( t ) {
-             bearer = t;
+        setBearerToken: function (t) {
+            bearer = t;
         }
 
     };//obj
     self = obj;
 
-    obj.setBasicAuthCreds("secret", "thing");
+    obj.setBasicAuthCreds("system", "system");
 
+    var performDeleteRequest = function (url, headers) {
+        headers = headers || {
+                Accept: "application/json"
+            };
+        var p = Q($.ajax({
+            type: "DELETE",
+            url: url,
+            dataType: 'json',
+            timeout: 12000, // 12 seconds because server is so slow
+            headers: headers
+        }));
+        p.fail(function (response) {
+            console.log('DELETE request failed: [' + url + ']', response);
+        });
+        return p;
+    };
     var performGetRequest = function (url, headers) {
         headers = headers || {
                 Accept: "application/json"
@@ -257,13 +273,12 @@ define("data", ["Q"], function (Q) {
         });
         return p;
     };
-
     var performPutRequest = function (url, data, headers) {
         headers = headers || {
                 Accept: "application/json"
             };
-        if (basicAuth){
-            headers["Authorization"] = "Basic "+basicAuth;
+        if (basicAuth) {
+            headers["Authorization"] = "Basic " + basicAuth;
         }
         var p = Q($.ajax({
             type: "PUT",
@@ -282,8 +297,8 @@ define("data", ["Q"], function (Q) {
         headers = headers || {
                 Accept: "application/json"
             };
-        if (basicAuth){
-            headers["Authorization"] = "Basic "+basicAuth;
+        if (basicAuth) {
+            headers["Authorization"] = "Basic " + basicAuth;
         }
         var p = Q($.ajax({
             type: "POST",
@@ -298,13 +313,12 @@ define("data", ["Q"], function (Q) {
         });
         return p;
     }
-
     var performFormPostRequest = function (url, data, headers) {
         headers = headers || {
                 Accept: "application/json"
             };
-        if (basicAuth){
-            headers["Authorization"] = "Basic "+basicAuth;
+        if (basicAuth) {
+            headers["Authorization"] = "Basic " + basicAuth;
         }
         var p = Q($.ajax({
             type: "POST",

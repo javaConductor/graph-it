@@ -4,48 +4,53 @@
 
 define("elementId", [], function () {
 
-  var obj =  {
-
-    createItemEditorId: function itemEditor(itemId){
-      return "itemEditor_"+( itemId || "new");
-    },
-
-    itemIdFromEditorId: function itemIdFromEditorId(itemEditorId){
-      return itemEditorId.substr(12);
-    },
-
-    itemIdFromItemPropertyEditorId: function itemIdFromEditorId(itemPropertyEditorId){
-      var itemId =  itemPropertyEditorId.split('_')[0];
-      return ( itemId == 'new') ? null : itemId;
-    },
-
-    createItemPropertyRowId: function createItemPropertyRowId(itemId, propertyName){
-      return "propertyRow_"+(itemId || 'new')+'_' + self._escapePropertyName(propertyName);
-    },
+    var obj = {
 
 
-    createItemPropertyNameId: function createItemPropertyNameId(itemId, propertyName){
-      return "propertyName_"+(itemId || 'new')+'_' + self._escapePropertyName(propertyName);
-    },
+        createItemEditorId: function itemEditor(itemId) {
+            return "itemEditor_" + ( itemId || "new");
+        },
 
-    createItemPropertyDirtyFlagId:function createItemPropertyDirtyFlagId(itemId, propertyName){
-      return "propertyValueDirty_"+(itemId || 'new')+'_' + self._escapePropertyName(propertyName);
-    },
+        itemIdFromEditorId: function itemIdFromEditorId(itemEditorId) {
+            return itemEditorId.substr(12);
+        },
 
-    _escapePropertyName: function(propertyName){
-      return propertyName.replace(/[\s()]/g, '');//.propertyName.replace(/[(]/g, '').propertyName.replace(/[)]/g, '');
-    },
+        elementIdFromItemId: function elementIdFromItemId(elementId) {
+            return 'graph-item:' + elementId;
+        },
 
-    createItemPropertyValueId: function createItemPropertyValueId(itemId, propertyName){
-      return ""+(itemId || 'new')+'_' + self._escapePropertyName(propertyName);
-    },
+        itemIdFromItemPropertyEditorId: function itemIdFromEditorId(itemPropertyEditorId) {
+            var itemId = itemPropertyEditorId.split('_')[0];
+            return ( itemId == 'new') ? null : itemId;
+        },
 
-    findItemPropertyValueElements: function findItemPropertyValueElements($parent){
-      /// find all the children of $propertyTable with the class
-      return $parent.find(".item-property-value").toArray();
-    }
-  };
-  var self = obj;
-  return obj;
+        createItemPropertyRowId: function createItemPropertyRowId(itemId, propertyName) {
+            return "propertyRow_" + (itemId || 'new') + '_' + self._escapePropertyName(propertyName);
+        },
+
+
+        createItemPropertyNameId: function createItemPropertyNameId(itemId, propertyName) {
+            return "propertyName_" + (itemId || 'new') + '_' + self._escapePropertyName(propertyName);
+        },
+
+        createItemPropertyDirtyFlagId: function createItemPropertyDirtyFlagId(itemId, propertyName) {
+            return "propertyValueDirty_" + (itemId || 'new') + '_' + self._escapePropertyName(propertyName);
+        },
+
+        _escapePropertyName: function (propertyName) {
+            return propertyName.replace(/[\s()]/g, '');//.propertyName.replace(/[(]/g, '').propertyName.replace(/[)]/g, '');
+        },
+
+        createItemPropertyValueId: function createItemPropertyValueId(itemId, propertyName) {
+            return "" + (itemId || 'new') + '_' + self._escapePropertyName(propertyName);
+        },
+
+        findItemPropertyValueElements: function findItemPropertyValueElements($parent) {
+            /// find all the children of $propertyTable with the class
+            return $parent.find(".item-property-value").toArray();
+        }
+    };
+    var self = obj;
+    return obj;
 
 });

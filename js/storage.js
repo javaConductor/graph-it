@@ -143,6 +143,21 @@ define("storage", ["Q", "data"], function (Q, dataService) {
       }
     },
 
+    removeGraphItem: function removeGraphItem(id){
+      if ( localStorage[graphItemKeyPrefix+id] ){
+        localStorage[graphItemKeyPrefix+ id] = undefined;
+        return dataService.deleteGraphItem(id).then(function(item){
+          return item;
+        });
+      }else{
+        var deferred = Q.defer();
+        var items = [];
+        deferred.resolve(JSON.parse(localStorage[graphItemKeyPrefix+ id]));
+        return deferred.promise;
+      }
+    },
+
+
     getGraphItem: function getGraphItem(id){
       if ( !localStorage[graphItemKeyPrefix+id] ){
         return dataService.getGraphItem().then(function(item){

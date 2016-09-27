@@ -27,7 +27,11 @@ define("graph",
             },
 
             createGraphItem: function (graphItem) {
-                return storage.addGraphItem(graphItem)
+                return storage.addGraphItem(graphItem);
+            },
+
+            removeGraphItem: function (id) {
+                return storage.removeGraphItem(id);
             },
 
             resizeParentByItemPosition: function ($graphView, positionX, positionY, height, width) {
@@ -46,6 +50,11 @@ define("graph",
             copyGraphItem: function (item) {
                 return _.clone(item)
             },
+            /**
+             * Creates a JQuery $element representing the graphItem
+             * @param graphItem
+             * @returns {*|jQuery|HTMLElement}
+             */
             createGraphItemElement: function (graphItem) {
                 // use the template to create the graphItem Element
                 var template = _.template(
@@ -107,6 +116,8 @@ define("graph",
                     });
                 });
                 div.find(".graph-item-copy").on("click", function (evt) {
+                    //TODO use the .dataXX() to  get the
+
                     storage.getGraphItem(graphItem.id).then(function (item) {
 
                         /// create a copy of graphItem
@@ -121,44 +132,31 @@ define("graph",
                         /// we want a new identity
                         newItem._id = undefined;
                         newItem.id = undefined;
-                        // ... and a new title
+                        // ... and a new     title
                         newItem.title = newName;
                         storage.addGraphItem(newItem).then(function (savedItem) {
-                            self.createGraphItemElement(savedItem);
-                        });
-                    });
-
-                div.find(".graph-item-delete").on("click", function (evt) {
-                    storage.getGraphItem(graphItem.id).then(function (item) {
-
-                        /// create a copy of graphItem
-                        var newItem = self.copyGraphItem(item);
-                        var newName = "";
-                        while (!newName || newName == item.title) {
-                            newName = popupService.promptForItemName(item.title);
-                            if (!newName) {
-                                alert("Must enter a new name for this item.")
-                            }
-                        }
-                        /// we want a new identity
-                        newItem.id = undefined;
-                        // ... and a new title
-                        newItem.title = newName;
-                        storage.addGraphItem(newItem).then(function (savedItem) {
-                            self.createGraphItemElement(savedItem);
+                            var element = self.createGraphItemElement(savedItem);
+                            div.parent().append( element );
                         });
                     });
                 });
 
-                    var notes = div.find(".graph-item-notes").val();
-                    console.log("updating notes: " + graphItem.id + " to " + "[" + notes + "]");
+                //TODO
+                div.find(".graph-item-delete").on("click", function (evt) {
                     storage.getGraphItem(graphItem.id).then(function (item) {
-                        if (notes != item.notes) {
-                            storage.updateGraphItemNotes(graphItem.id, notes).then(function (updatedItem) {
-                                div.find(".graph-item-notes").val(updatedItem.notes);
-                            });
-                        }
+                        self.removeGraphItem(item.id)
+                        /// create a copy of graphItem
                     });
+                });
+
+                var notes = div.find(".graph-item-notes").val();
+                console.log("updating notes: " + graphItem.id + " to " + "[" + notes + "]");
+                storage.getGraphItem(graphItem.id).then(function (item) {
+                    if (notes != item.notes) {
+                        storage.updateGraphItemNotes(graphItem.id, notes).then(function (updatedItem) {
+                            div.find(".graph-item-notes").val(updatedItem.notes);
+                        });
+                    }
                 });
 
                 div.addClass("selection-off");
