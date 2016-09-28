@@ -55,13 +55,13 @@ define("graph",
              * @param graphItem
              * @returns {*|jQuery|HTMLElement}
              */
-            createGraphItemElement: function (graphItem) {
+            createGraphItemElement: function (graphItem, $parent) {
                 // use the template to create the graphItem Element
                 var template = _.template(
                     $("#graph-item-template").html()
                 );
-                var div = $(template(graphItem));
-                div.draggable({
+                var $div = $(template(graphItem));
+                $div.draggable({
                     cursor: "move",
                     opacity: 0.35,
                     snap: true,
@@ -71,22 +71,22 @@ define("graph",
                     },
 
                     start: function () {
-                        var pos = div.position();
+                        var pos = $div.position();
                         console.log("Start ", {x: pos.left, y: pos.top});
 //            jsPlumb.repaint($(this));
                     },
                     stop: function (event, ui) {
-                        var pos = div.position();
+                        var pos = $div.position();
                         console.log("End (pos)", {x: pos.left, y: pos.top});
                         console.log("End ", {x: ui.position.left, y: ui.position.top});
                         graphItem.position.x = Math.max(pos.left, 0);
                         graphItem.position.y = Math.max(pos.top, 0);
-                        div.animate({top: graphItem.position.y}, function () {
-                            div.animate({left: graphItem.position.x}, function () {
+                        $div.animate({top: graphItem.position.y}, function () {
+                            $div.animate({left: graphItem.position.x}, function () {
                                 relationshipService.jsPlumb.repaintEverything();
                                 self.updateItemPosition(graphItem).then(function (newGraphItem) {
                                     /// resize the parent
-                                    self.resizeParentByItemPosition($("#graph-view"), graphItem.position.x, graphItem.position.y, div.height(), div.width());
+                                    self.resizeParentByItemPosition($("#graph-view"), graphItem.position.x, graphItem.position.y, $div.height(), $div.width());
 
                                     console.log("Graph Item updated ", newGraphItem.position);
                                 })
@@ -94,8 +94,8 @@ define("graph",
                         });
                     }
                 });
-                div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
-                var divSelector = '#' + div.attr("id");
+                $div.css({top: graphItem.position.y, left: graphItem.position.x, position: 'absolute'});
+                var divSelector = '#' + $div.attr("id");
                 $(divSelector).focusin(function () {
                     console.log("focus: " + this);
                     $(divSelector).css('border-style', 'solid');
@@ -104,18 +104,18 @@ define("graph",
                     $(divSelector).css('border-style', 'dashed');
                 });
 
-                div.find(".graph-item-notes").blur(function (evt) {
-                    var notes = div.find(".graph-item-notes").val();
+                $div.find(".graph-item-notes").blur(function (evt) {
+                    var notes = $div.find(".graph-item-notes").val();
                     console.log("updating notes: " + graphItem.id + " to " + "[" + notes + "]");
                     storage.getGraphItem(graphItem.id).then(function (item) {
                         if (notes != item.notes) {
                             storage.updateGraphItemNotes(graphItem.id, notes).then(function (updatedItem) {
-                                div.find(".graph-item-notes").val(updatedItem.notes);
+                                $div.find(".graph-item-notes").val(updatedItem.notes);
                             });
                         }
                     });
                 });
-                div.find(".graph-item-copy").on("click", function (evt) {
+                $div.find(".graph-item-copy").on("click", function (evt) {
                     //TODO use the .dataXX() to  get the
 
                     storage.getGraphItem(graphItem.id).then(function (item) {
@@ -132,54 +132,51 @@ define("graph",
                         /// we want a new identity
                         newItem._id = undefined;
                         newItem.id = undefined;
-                        // ... and a new     title
+                        // ... and a new title
                         newItem.title = newName;
                         storage.addGraphItem(newItem).then(function (savedItem) {
-                            var element = self.createGraphItemElement(savedItem);
-                            div.parent().append( element );
+                            var element = self.createGraphItemElement( savedItem, $parent );
                         });
                     });
                 });
 
-                //TODO
-                div.find(".graph-item-delete").on("click", function (evt) {
+                $div.find(".graph-item-delete").on("click", function (evt) {
                     storage.getGraphItem(graphItem.id).then(function (item) {
                         self.removeGraphItem(item.id)
                         /// create a copy of graphItem
                     });
                 });
 
-                var notes = div.find(".graph-item-notes").val();
+                var notes = $div.find(".graph-item-notes").val();
                 console.log("updating notes: " + graphItem.id + " to " + "[" + notes + "]");
                 storage.getGraphItem(graphItem.id).then(function (item) {
                     if (notes != item.notes) {
                         storage.updateGraphItemNotes(graphItem.id, notes).then(function (updatedItem) {
-                            div.find(".graph-item-notes").val(updatedItem.notes);
+                            $div.find(".graph-item-notes").val(updatedItem.notes);
                         });
                     }
                 });
 
-                div.addClass("selection-off");
-                div.click(function (e) {
-                    selection.selectItem($("#graph-view"), div);
+                $div.addClass("selection-off");
+                $div.click(function (e) {
+                    selection.selectItem($("#graph-view"), $div);
                 });
 
                 typeSystem.resolveType(graphItem.typeName).then(function (type) {
                     self.createPropertyRows(graphItem.id, type,
                         graphItem.data,
-                        div.find("#graph-item-properties"), "graph-item-data-name", "graph-item-data-value");
+                        $div.find("#graph-item-properties"), "graph-item-data-name", "graph-item-data-value");
                 });
-
-                return div;
+                if ($parent)
+                    $parent.append($div);
+                return $div;
             },
 
             createGraphItemElements: function (parent, graphItems) {
                 var divs = graphItems.map(function (graphItem, idx) {
-                    var div = self.createGraphItemElement(graphItem);
-                    parent.append(div);
+                    var div = self.createGraphItemElement(graphItem, parent );
                     var dynamicAnchors = [[0.2, 0, 0, -1], [1, 0.2, 1, 0],
                         [0.8, 1, 0, 1], [0, 0.8, -1, 0]];
-
 
                     var endpointOptions = {
                         anchor: ["AutoDefault"],
