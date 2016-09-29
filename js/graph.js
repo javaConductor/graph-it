@@ -31,7 +31,9 @@ define("graph",
             },
 
             removeGraphItem: function (id) {
-                return storage.removeGraphItem(id);
+                var elId = elementId.elementIdFromItemId(id);
+                $("#"+elId).remove();
+                return storage.removeGraphItem(id); 
             },
 
             resizeParentByItemPosition: function ($graphView, positionX, positionY, height, width) {
@@ -126,7 +128,7 @@ define("graph",
                         while (!newName || newName == item.title) {
                             newName = popupService.promptForItemName(item.title);
                             if (!newName) {
-                                alert("Must enter a new name for this item.")
+                                alert(  "Must enter a new name for this item.")
                             }
                         }
                         /// we want a new identity
@@ -143,7 +145,6 @@ define("graph",
                 $div.find(".graph-item-delete").on("click", function (evt) {
                     storage.getGraphItem(graphItem.id).then(function (item) {
                         self.removeGraphItem(item.id)
-                        /// create a copy of graphItem
                     });
                 });
 

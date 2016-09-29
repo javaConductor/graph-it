@@ -15,6 +15,12 @@ define("elementId", [], function () {
             return itemEditorId.substr(12);
         },
 
+        /**
+         * Creates the HTML element id for a particular item
+         * *** This must change when we show multiple views at once
+         * @param elementId
+         * @returns {string}
+         */
         elementIdFromItemId: function elementIdFromItemId(elementId) {
             return 'graph-item:' + elementId;
         },
