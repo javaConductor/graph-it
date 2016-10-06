@@ -234,6 +234,16 @@ define("data", ["Q"], function (Q) {
         },
         setBearerToken: function (t) {
             bearer = t;
+        },
+        authenticate: function (u, p) {
+            var p = performPostRequest(prefix + "auth", {password: p, username: u});
+            p.then(function (result) {
+                if (result.authToken) {
+                    self.setBasicAuthCreds(u, p);
+                }
+                return result;
+            });
+            return p;
         }
 
     };//obj
@@ -261,6 +271,9 @@ define("data", ["Q"], function (Q) {
         headers = headers || {
                 Accept: "application/json"
             };
+        if (basicAuth) {
+            headers["Authorization"] = "Basic " + basicAuth;
+        }
         var p = Q($.ajax({
             type: "GET",
             url: url,
@@ -335,6 +348,7 @@ define("data", ["Q"], function (Q) {
         });
         return p;
     };
+
 
     return obj;
 });

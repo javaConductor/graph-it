@@ -3,7 +3,8 @@
  */
 
 define("toolbar", ["Q", "graph", "relationship", "storage", "data", "typeSystem", "underscore", "elementId", "popupService", "category-ui"],
-    function (Q, graphService, relationshipService, storageService, dataService, typeSystem, _, elementId, popupService, categoryUI) {
+    function (Q, graphService, relationshipService, storageService, dataService, 
+              typeSystem, _, elementId, popupService, categoryUI) {
 
         var creationPosition = {x: 100, y: 100}
 
@@ -93,6 +94,31 @@ define("toolbar", ["Q", "graph", "relationship", "storage", "data", "typeSystem"
 
                 $("#graph-toolbar-new-item").click(function () {
                     obj.openNewItemDialog();
+                });
+
+
+                function showButtonIfNecessary(e) {
+                    var show = ( $("#graph-toolbar-username").val() && $("#graph-toolbar-password").val() );
+                    $("#graph-toolbar-login-button").prop( "disabled", show );
+                }
+                $("#graph-toolbar-password").change(showButtonIfNecessary);
+                $("#graph-toolbar-username").change(showButtonIfNecessary);
+
+                $("#graph-toolbar-login-button").click(function () {
+                    /// authenticate using graph-toolbar-password, grpah-toolbar-username
+                    var p = $("#graph-toolbar-password").val();
+                    var u = $("#graph-toolbar-username").val();
+                    dataService.authenticate(u,p).then(function (result) {
+                        /// swap login for logout
+                        if(result.authToken){
+                            $("#graph-toolbar-logout").style("display: inline; visibility: visible");
+                            $("#graph-toolbar-login").style("display: none; visibility: hidden");
+                        } else {
+                            $("#graph-toolbar-logout").style("display: none; visibility: hidden");
+                            $("#graph-toolbar-login").style("display: inline; visibility: visible");
+                        }
+                    });
+                    
                 });
 
                 typeSystem.resolveType(typeSystem.BASE_TYPE_NAME).then(function (baseType) {

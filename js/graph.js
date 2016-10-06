@@ -31,9 +31,18 @@ define("graph",
             },
 
             removeGraphItem: function (id) {
-                var elId = elementId.elementIdFromItemId(id);
-                $("#"+elId).remove();
-                return storage.removeGraphItem(id); 
+                return storage.removeGraphItem(id).then(
+                    function (success) {
+                        if (success) {
+                            var elId = elementId.elementIdFromItemId(id);
+                            $("#" + elId).remove();
+                        } else {
+                            alert("Could not remove item")
+                        }
+                        return success;
+                    }, function (err) {
+                        alert("Could not remove item: " + JSON.stringify(err));
+                    });
             },
 
             resizeParentByItemPosition: function ($graphView, positionX, positionY, height, width) {
@@ -128,7 +137,7 @@ define("graph",
                         while (!newName || newName == item.title) {
                             newName = popupService.promptForItemName(item.title);
                             if (!newName) {
-                                alert(  "Must enter a new name for this item.")
+                                alert("Must enter a new name for this item.")
                             }
                         }
                         /// we want a new identity
@@ -137,12 +146,13 @@ define("graph",
                         // ... and a new title
                         newItem.title = newName;
                         storage.addGraphItem(newItem).then(function (savedItem) {
-                            var element = self.createGraphItemElement( savedItem, $parent );
+                            var element = self.createGraphItemElement(savedItem, $parent);
                         });
                     });
                 });
 
                 $div.find(".graph-item-delete").on("click", function (evt) {
+                    console.log("Delete item (" + graphItem.id + ") button clicked.");
                     storage.getGraphItem(graphItem.id).then(function (item) {
                         self.removeGraphItem(item.id)
                     });
@@ -175,7 +185,7 @@ define("graph",
 
             createGraphItemElements: function (parent, graphItems) {
                 var divs = graphItems.map(function (graphItem, idx) {
-                    var div = self.createGraphItemElement(graphItem, parent );
+                    var div = self.createGraphItemElement(graphItem, parent);
                     var dynamicAnchors = [[0.2, 0, 0, -1], [1, 0.2, 1, 0],
                         [0.8, 1, 0, 1], [0, 0.8, -1, 0]];
 

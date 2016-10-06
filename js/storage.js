@@ -144,6 +144,7 @@ define("storage", ["Q", "data"], function (Q, dataService) {
         },
 
         removeGraphItem: function removeGraphItem(id) {
+            console.log("Removing item: "+ id);
             if (localStorage[graphItemKeyPrefix + id]) {
                 return dataService.deleteGraphItem(id).then(function (success) {
                     if(success)
